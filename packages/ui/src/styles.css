@@ -1,0 +1,126 @@
+@import "tailwindcss";
+
+/* Class-based dark mode (toggle sets .dark on <html>). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Semantic theme tokens. Status colors are CVD/contrast-validated per theme
+ * (see design: claude.ai/artifact/1Quve49f4evDMUQz8Xjbha) — dark mode gets its
+ * own steps, never an automatic flip. Donut segment order avoids red↔amber
+ * adjacency for red-green colorblind readers.
+ */
+:root {
+  --ground: #f4f6f8;
+  --card: #ffffff;
+  --card-2: #fbfcfd;
+  --edge: #e5e9ef;
+  --edge-2: #eef1f5;
+  --ink: #101828;
+  --ink-2: #45566b;
+  --ink-3: #52627a;
+  --ink-4: #60708a;
+  --brand: #6366f1;
+  --brand-text: #4f46e5;
+  --brand-soft: #eef0ff;
+  --brand-ring: rgba(99, 102, 241, 0.18);
+  --passed: #059669;
+  --failed: #ef4444;
+  --flaky: #f59e0b;
+  --skipped: #5873b8;
+  --passed-text: #047857;
+  --failed-text: #b91c1c;
+  --flaky-text: #92400e;
+  --skipped-text: #46608f;
+  --passed-tint: #e7f6f0;
+  --failed-tint: #fdecec;
+  --flaky-tint: #fdf3e0;
+  --skipped-tint: #eaeff8;
+  --code-bg: #101828;
+  --code-ink: #cbd5e1;
+}
+
+.dark {
+  --ground: #0e1420;
+  --card: #151d2b;
+  --card-2: #111927;
+  --edge: #232f45;
+  --edge-2: #202b3f;
+  --ink: #e8edf4;
+  --ink-2: #a9b6c8;
+  --ink-3: #8896ab;
+  --ink-4: #7e8ca3;
+  --brand: #818cf8;
+  --brand-text: #a5b0fa;
+  --brand-soft: rgba(129, 140, 248, 0.15);
+  --brand-ring: rgba(129, 140, 248, 0.22);
+  --passed: #0d9b6c;
+  --failed: #ef4444;
+  --flaky: #bd830a;
+  --skipped: #6d83c4;
+  --passed-text: #35c08d;
+  --failed-text: #f58585;
+  --flaky-text: #dfa02e;
+  --skipped-text: #93a8d6;
+  --passed-tint: rgba(13, 155, 108, 0.16);
+  --failed-tint: rgba(239, 68, 68, 0.14);
+  --flaky-tint: rgba(189, 131, 10, 0.16);
+  --skipped-tint: rgba(109, 131, 196, 0.16);
+  --code-bg: #0b111d;
+  --code-ink: #c3cede;
+}
+
+@theme inline {
+  --font-sans: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+  --font-display: "Space Grotesk", "IBM Plex Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --color-ground: var(--ground);
+  --color-card: var(--card);
+  --color-card-2: var(--card-2);
+  --color-edge: var(--edge);
+  --color-edge-2: var(--edge-2);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-ink-4: var(--ink-4);
+  --color-brand: var(--brand);
+  --color-brand-text: var(--brand-text);
+  --color-brand-soft: var(--brand-soft);
+  --color-passed: var(--passed);
+  --color-failed: var(--failed);
+  --color-flaky: var(--flaky);
+  --color-skipped: var(--skipped);
+  --color-passed-text: var(--passed-text);
+  --color-failed-text: var(--failed-text);
+  --color-flaky-text: var(--flaky-text);
+  --color-skipped-text: var(--skipped-text);
+  --color-passed-tint: var(--passed-tint);
+  --color-failed-tint: var(--failed-tint);
+  --color-flaky-tint: var(--flaky-tint);
+  --color-skipped-tint: var(--skipped-tint);
+  --color-code-bg: var(--code-bg);
+  --color-code-ink: var(--code-ink);
+}
+
+body {
+  @apply bg-ground font-sans text-ink antialiased;
+}
+
+@media print {
+  header,
+  nav,
+  button,
+  input,
+  select,
+  [data-search] {
+    display: none !important;
+  }
+  body {
+    background: #fff;
+    color: #101828;
+  }
+  main {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+}

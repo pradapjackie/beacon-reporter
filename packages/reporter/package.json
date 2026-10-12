@@ -1,0 +1,69 @@
+{
+  "name": "beacon-reporter",
+  "version": "0.1.0",
+  "description": "Beacon \u2014 a beautiful, fast, static HTML reporter for Playwright. Allure-grade analytics, one npm install",
+  "keywords": ["playwright", "reporter", "html", "report", "testing", "allure", "beacon"],
+  "license": "MIT",
+  "homepage": "https://github.com/pradapjackie/beacon-reporter#readme",
+  "bugs": {
+    "url": "https://github.com/pradapjackie/beacon-reporter/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pradapjackie/beacon-reporter.git",
+    "directory": "packages/reporter"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "bin": {
+    "beacon": "./dist/cli/index.js"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.js"
+    },
+    "./fixture-recorder": {
+      "types": "./dist/fixture-recorder.d.ts",
+      "require": "./dist/fixture-recorder.cjs",
+      "import": "./dist/fixture-recorder.js"
+    },
+    "./replay": {
+      "types": "./dist/replay.d.ts",
+      "require": "./dist/replay.cjs",
+      "import": "./dist/replay.js"
+    },
+    "./fixtures": {
+      "types": "./dist/fixtures.d.ts",
+      "require": "./dist/fixtures.cjs",
+      "import": "./dist/fixtures.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup && node scripts/copy-ui.mjs",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@playwright/test": ">=1.40 <2"
+  },
+  "devDependencies": {
+    "@beacon-report/shared": "workspace:*",
+    "@beacon-report/ui": "workspace:*",
+    "@playwright/test": "^1.49.1",
+    "@types/node": "^22.10.5",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2",
+    "vitest": "^3.0.0"
+  }
+}

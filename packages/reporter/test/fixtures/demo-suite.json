@@ -1,0 +1,1181 @@
+{
+  "recorderVersion": 1,
+  "recordedAt": "2026-09-24T08:32:01.367Z",
+  "playwrightVersion": "1.63.0",
+  "events": [
+    {
+      "type": "onBegin",
+      "config": {
+        "workers": 5,
+        "fullyParallel": false,
+        "playwrightVersion": "1.63.0",
+        "projectNames": [
+          "alpha",
+          "beta"
+        ]
+      }
+    },
+    {
+      "type": "onTestEnd",
+      "test": {
+        "title": "passes with steps and attachments @smoke",
+        "titlePath": [
+          "",
+          "alpha",
+          "demo.spec.ts",
+          "beacon demo suite",
+          "passes with steps and attachments @smoke"
+        ],
+        "file": "demo.spec.ts",
+        "line": 28,
+        "column": 3,
+        "projectName": "alpha",
+        "tags": [
+          "@smoke"
+        ],
+        "annotations": [],
+        "timeout": 30000,
+        "outcome": "expected"
+      },
+      "result": {
+        "retry": 0,
+        "workerIndex": 0,
+        "parallelIndex": 0,
+        "startTime": 1790238720604,
+        "duration": 5,
+        "status": "passed",
+        "errors": [],
+        "stdout": [],
+        "stderr": [],
+        "attachments": [
+          {
+            "name": "greeting",
+            "contentType": "text/plain",
+            "size": 17,
+            "bodyBase64": "aGVsbG8gZnJvbSBiZWFjb24="
+          },
+          {
+            "name": "tiny screenshot",
+            "contentType": "image/png",
+            "size": 70,
+            "bodyBase64": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
+          }
+        ],
+        "steps": [
+          {
+            "title": "Before Hooks",
+            "category": "hook",
+            "startTime": 1790238720613,
+            "duration": 5,
+            "steps": []
+          },
+          {
+            "title": "outer step",
+            "category": "test.step",
+            "startTime": 1790238720618,
+            "duration": 3,
+            "steps": [
+              {
+                "title": "inner assertion",
+                "category": "test.step",
+                "startTime": 1790238720619,
+                "duration": 2,
+                "steps": [
+                  {
+                    "title": "Expect \"toBe\"",
+                    "category": "expect",
+                    "startTime": 1790238720620,
+                    "duration": 1,
+                    "steps": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "title": "Attach \"greeting\"",
+            "category": "test.attach",
+            "startTime": 1790238720621,
+            "duration": 0,
+            "steps": []
+          },
+          {
+            "title": "Attach \"tiny screenshot\"",
+            "category": "test.attach",
+            "startTime": 1790238720622,
+            "duration": 0,
+            "steps": []
+          },
+          {
+            "title": "After Hooks",
+            "category": "hook",
+            "startTime": 1790238720622,
+            "duration": 3,
+            "steps": []
+          }
+        ]
+      }
+    },
+    {
+      "type": "onTestEnd",
+      "test": {
+        "title": "passes with steps and attachments @smoke",
+        "titlePath": [
+          "",
+          "beta",
+          "demo.spec.ts",
+          "beacon demo suite",
+          "passes with steps and attachments @smoke"
+        ],
+        "file": "demo.spec.ts",
+        "line": 28,
+        "column": 3,
+        "projectName": "beta",
+        "tags": [
+          "@smoke"
+        ],
+        "annotations": [],
+        "timeout": 30000,
+        "outcome": "expected"
+      },
+      "result": {
+        "retry": 0,
+        "workerIndex": 1,
+        "parallelIndex": 1,
+        "startTime": 1790238720604,
+        "duration": 6,
+        "status": "passed",
+        "errors": [],
+        "stdout": [],
+        "stderr": [],
+        "attachments": [
+          {
+            "name": "greeting",
+            "contentType": "text/plain",
+            "size": 17,
+            "bodyBase64": "aGVsbG8gZnJvbSBiZWFjb24="
+          },
+          {
+            "name": "tiny screenshot",
+            "contentType": "image/png",
+            "size": 70,
+            "bodyBase64": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
+          }
+        ],
+        "steps": [
+          {
+            "title": "Before Hooks",
+            "category": "hook",
+            "startTime": 1790238720614,
+            "duration": 4,
+            "steps": []
+          },
+          {
+            "title": "outer step",
+            "category": "test.step",
+            "startTime": 1790238720619,
+            "duration": 3,
+            "steps": [
+              {
+                "title": "inner assertion",
+                "category": "test.step",
+                "startTime": 1790238720620,
+                "duration": 2,
+                "steps": [
+                  {
+                    "title": "Expect \"toBe\"",
+                    "category": "expect",
+                    "startTime": 1790238720622,
+                    "duration": 0,
+                    "steps": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "title": "Attach \"greeting\"",
+            "category": "test.attach",
+            "startTime": 1790238720622,
+            "duration": 1,
+            "steps": []
+          },
+          {
+            "title": "Attach \"tiny screenshot\"",
+            "category": "test.attach",
+            "startTime": 1790238720623,
+            "duration": 0,
+            "steps": []
+          },
+          {
+            "title": "After Hooks",
+            "category": "hook",
+            "startTime": 1790238720623,
+            "duration": 4,
+            "steps": []
+          }
+        ]
+      }
+    },
+    {
+      "type": "onTestEnd",
+      "test": {
+        "title": "fails as expected (demonstrates failure capture)",
+        "titlePath": [
+          "",
+          "alpha",
+          "demo.spec.ts",
+          "beacon demo suite",
+          "fails as expected (demonstrates failure capture)"
+        ],
+        "file": "demo.spec.ts",
+        "line": 41,
+        "column": 3,
+        "projectName": "alpha",
+        "tags": [],
+        "annotations": [
+          {
+            "type": "fail",
+            "description": "intentional failure so the demo run still exits green"
+          }
+        ],
+        "timeout": 30000,
+        "outcome": "expected"
+      },
+      "result": {
+        "retry": 0,
+        "workerIndex": 0,
+        "parallelIndex": 0,
+        "startTime": 1790238720625,
+        "duration": 3,
+        "status": "failed",
+        "errors": [
+          {
+            "message": "Error: intentionally wrong assertion\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m5\u001b[39m\nReceived: \u001b[31m4\u001b[39m",
+            "stack": "Error: intentionally wrong assertion\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m5\u001b[39m\nReceived: \u001b[31m4\u001b[39m\n    at /home/dev/beacon-reporter/fixtures/demo-suite/tests/demo.spec.ts:46:52",
+            "snippet": "  44 |     // browser projects with tracing on) — exercises the trace card + link-out.\n  45 |     await testInfo.attach('trace', { body: EMPTY_ZIP, contentType: 'application/zip' });\n> 46 |     expect(2 + 2, 'intentionally wrong assertion').toBe(5);\n     |                                                    ^\n  47 |   });\n  48 |\n  49 |   test('flaky: fails first, passes on retry @regression', async ({}, testInfo) => {",
+            "location": {
+              "file": "/home/dev/beacon-reporter/fixtures/demo-suite/tests/demo.spec.ts",
+              "column": 52,
+              "line": 46
+            }
+          }
+        ],
+        "stdout": [],
+        "stderr": [],
+        "attachments": [
+          {
+            "name": "trace",
+            "contentType": "application/zip",
+            "size": 22,
+            "bodyBase64": "UEsFBgAAAAAAAAAAAAAAAAAAAAAAAA=="
+          },
+          {
+            "name": "error-context",
+            "contentType": "text/markdown",
+            "path": "/home/dev/beacon-reporter/fixtures/demo-suite/test-results/demo-beacon-demo-suite-fai-c5812-monstrates-failure-capture--alpha/error-context.md"
+          }
+        ],
+        "steps": [
+          {
+            "title": "Before Hooks",
+            "category": "hook",
+            "startTime": 1790238720626,
+            "duration": 3,
+            "steps": []
+          },
+          {
+            "title": "Attach \"trace\"",
+            "category": "test.attach",
+            "startTime": 1790238720630,
+            "duration": 1,
+            "steps": []
+          },
+          {
+            "title": "intentionally wrong assertion",
+            "category": "expect",
+            "startTime": 1790238720631,
+            "duration": 1,
+            "error": {
+              "message": "Error: intentionally wrong assertion\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m5\u001b[39m\nReceived: \u001b[31m4\u001b[39m",
+              "stack": "Error: intentionally wrong assertion\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m5\u001b[39m\nReceived: \u001b[31m4\u001b[39m\n    at /home/dev/beacon-reporter/fixtures/demo-suite/tests/demo.spec.ts:46:52",
+              "snippet": "  44 |     // browser projects with tracing on) — exercises the trace card + link-out.\n  45 |     await testInfo.attach('trace', { body: EMPTY_ZIP, contentType: 'application/zip' });\n> 46 |     expect(2 + 2, 'intentionally wrong assertion').toBe(5);\n     |                                                    ^\n  47 |   });\n  48 |\n  49 |   test('flaky: fails first, passes on retry @regression', async ({}, testInfo) => {",
+              "location": {
+                "file": "/home/dev/beacon-reporter/fixtures/demo-suite/tests/demo.spec.ts",
+                "column": 52,
+                "line": 46
+              }
+            },
+            "steps": []
+          },
+          {
+            "title": "After Hooks",
+            "category": "hook",
+            "startTime": 1790238720632,
+            "duration": 6,
+            "steps": []
+          }
+        ]
+      }
+    },
+    {
+      "type": "onTestEnd",
+      "test": {
+        "title": "fails as expected (demonstrates failure capture)",
+        "titlePath": [
+          "",
+          "beta",
+          "demo.spec.ts",
+          "beacon demo suite",
+          "fails as expected (demonstrates failure capture)"
+        ],
+        "file": "demo.spec.ts",
+        "line": 41,
+        "column": 3,
+        "projectName": "beta",
+        "tags": [],
+        "annotations": [
+          {
+            "type": "fail",
+            "description": "intentional failure so the demo run still exits green"
+          }
+        ],
+        "timeout": 30000,
+        "outcome": "expected"
+      },
+      "result": {
+        "retry": 0,
+        "workerIndex": 1,
+        "parallelIndex": 1,
+        "startTime": 1790238720627,
+        "duration": 3,
+        "status": "failed",
+        "errors": [
+          {
+            "message": "Error: intentionally wrong assertion\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m5\u001b[39m\nReceived: \u001b[31m4\u001b[39m",
+            "stack": "Error: intentionally wrong assertion\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m5\u001b[39m\nReceived: \u001b[31m4\u001b[39m\n    at /home/dev/beacon-reporter/fixtures/demo-suite/tests/demo.spec.ts:46:52",
+            "snippet": "  44 |     // browser projects with tracing on) — exercises the trace card + link-out.\n  45 |     await testInfo.attach('trace', { body: EMPTY_ZIP, contentType: 'application/zip' });\n> 46 |     expect(2 + 2, 'intentionally wrong assertion').toBe(5);\n     |                                                    ^\n  47 |   });\n  48 |\n  49 |   test('flaky: fails first, passes on retry @regression', async ({}, testInfo) => {",
+            "location": {
+              "file": "/home/dev/beacon-reporter/fixtures/demo-suite/tests/demo.spec.ts",
+              "column": 52,
+              "line": 46
+            }
+          }
+        ],
+        "stdout": [],
+        "stderr": [],
+        "attachments": [
+          {
+            "name": "trace",
+            "contentType": "application/zip",
+            "size": 22,
+            "bodyBase64": "UEsFBgAAAAAAAAAAAAAAAAAAAAAAAA=="
+          },
+          {
+            "name": "error-context",
+            "contentType": "text/markdown",
+            "path": "/home/dev/beacon-reporter/fixtures/demo-suite/test-results/demo-beacon-demo-suite-fai-c5812-monstrates-failure-capture--beta/error-context.md"
+          }
+        ],
+        "steps": [
+          {
+            "title": "Before Hooks",
+            "category": "hook",
+            "startTime": 1790238720628,
+            "duration": 4,
+            "steps": []
+          },
+          {
+            "title": "Attach \"trace\"",
+            "category": "test.attach",
+            "startTime": 1790238720633,
+            "duration": 0,
+            "steps": []
+          },
+          {
+            "title": "intentionally wrong assertion",
+            "category": "expect",
+            "startTime": 1790238720634,
+            "duration": 1,
+            "error": {
+              "message": "Error: intentionally wrong assertion\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m5\u001b[39m\nReceived: \u001b[31m4\u001b[39m",
+              "stack": "Error: intentionally wrong assertion\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m5\u001b[39m\nReceived: \u001b[31m4\u001b[39m\n    at /home/dev/beacon-reporter/fixtures/demo-suite/tests/demo.spec.ts:46:52",
+              "snippet": "  44 |     // browser projects with tracing on) — exercises the trace card + link-out.\n  45 |     await testInfo.attach('trace', { body: EMPTY_ZIP, contentType: 'application/zip' });\n> 46 |     expect(2 + 2, 'intentionally wrong assertion').toBe(5);\n     |                                                    ^\n  47 |   });\n  48 |\n  49 |   test('flaky: fails first, passes on retry @regression', async ({}, testInfo) => {",
+              "location": {
+                "file": "/home/dev/beacon-reporter/fixtures/demo-suite/tests/demo.spec.ts",
+                "column": 52,
+                "line": 46
+              }
+            },
+            "steps": []
+          },
+          {
+            "title": "After Hooks",
+            "category": "hook",
+            "startTime": 1790238720635,
+            "duration": 6,
+            "steps": []
+          }
+        ]
+      }
+    },
+    {
+      "type": "onTestEnd",
+      "test": {
+        "title": "flaky: fails first, passes on retry @regression",
+        "titlePath": [
+          "",
+          "alpha",
+          "demo.spec.ts",
+          "beacon demo suite",
+          "flaky: fails first, passes on retry @regression"
+        ],
+        "file": "demo.spec.ts",
+        "line": 49,
+        "column": 3,
+        "projectName": "alpha",
+        "tags": [
+          "@regression"
+        ],
+        "annotations": [],
+        "timeout": 30000,
+        "outcome": "unexpected"
+      },
+      "result": {
+        "retry": 0,
+        "workerIndex": 0,
+        "parallelIndex": 0,
+        "startTime": 1790238720638,
+        "duration": 1,
+        "status": "failed",
+        "errors": [
+          {
+            "message": "Error: fails on the first attempt to demonstrate flakiness\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m",
+            "stack": "Error: fails on the first attempt to demonstrate flakiness\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m\n    at /home/dev/beacon-reporter/fixtures/demo-suite/tests/demo.spec.ts:50:83",
+            "snippet": "  48 |\n  49 |   test('flaky: fails first, passes on retry @regression', async ({}, testInfo) => {\n> 50 |     expect(testInfo.retry, 'fails on the first attempt to demonstrate flakiness').toBeGreaterThan(\n     |                                                                                   ^\n  51 |       0,\n  52 |     );\n  53 |   });",
+            "location": {
+              "file": "/home/dev/beacon-reporter/fixtures/demo-suite/tests/demo.spec.ts",
+              "column": 83,
+              "line": 50
+            }
+          }
+        ],
+        "stdout": [],
+        "stderr": [],
+        "attachments": [
+          {
+            "name": "error-context",
+            "contentType": "text/markdown",
+            "path": "/home/dev/beacon-reporter/fixtures/demo-suite/test-results/demo-beacon-demo-suite-fla-6905b--passes-on-retry-regression-alpha/error-context.md"
+          }
+        ],
+        "steps": [
+          {
+            "title": "Before Hooks",
+            "category": "hook",
+            "startTime": 1790238720639,
+            "duration": 2,
+            "steps": []
+          },
+          {
+            "title": "fails on the first attempt to demonstrate flakiness",
+            "category": "expect",
+            "startTime": 1790238720641,
+            "duration": 0,
+            "error": {
+              "message": "Error: fails on the first attempt to demonstrate flakiness\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m",
+              "stack": "Error: fails on the first attempt to demonstrate flakiness\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m\n    at /home/dev/beacon-reporter/fixtures/demo-suite/tests/demo.spec.ts:50:83",
+              "snippet": "  48 |\n  49 |   test('flaky: fails first, passes on retry @regression', async ({}, testInfo) => {\n> 50 |     expect(testInfo.retry, 'fails on the first attempt to demonstrate flakiness').toBeGreaterThan(\n     |                                                                                   ^\n  51 |       0,\n  52 |     );\n  53 |   });",
+              "location": {
+                "file": "/home/dev/beacon-reporter/fixtures/demo-suite/tests/demo.spec.ts",
+                "column": 83,
+                "line": 50
+              }
+            },
+            "steps": []
+          },
+          {
+            "title": "After Hooks",
+            "category": "hook",
+            "startTime": 1790238720641,
+            "duration": 13,
+            "steps": []
+          },
+          {
+            "title": "Worker Cleanup",
+            "category": "hook",
+            "startTime": 1790238720654,
+            "duration": 1,
+            "steps": []
+          }
+        ]
+      }
+    },
+    {
+      "type": "onTestEnd",
+      "test": {
+        "title": "flaky: fails first, passes on retry @regression",
+        "titlePath": [
+          "",
+          "beta",
+          "demo.spec.ts",
+          "beacon demo suite",
+          "flaky: fails first, passes on retry @regression"
+        ],
+        "file": "demo.spec.ts",
+        "line": 49,
+        "column": 3,
+        "projectName": "beta",
+        "tags": [
+          "@regression"
+        ],
+        "annotations": [],
+        "timeout": 30000,
+        "outcome": "unexpected"
+      },
+      "result": {
+        "retry": 0,
+        "workerIndex": 1,
+        "parallelIndex": 1,
+        "startTime": 1790238720641,
+        "duration": 2,
+        "status": "failed",
+        "errors": [
+          {
+            "message": "Error: fails on the first attempt to demonstrate flakiness\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m",
+            "stack": "Error: fails on the first attempt to demonstrate flakiness\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m\n    at /home/dev/beacon-reporter/fixtures/demo-suite/tests/demo.spec.ts:50:83",
+            "snippet": "  48 |\n  49 |   test('flaky: fails first, passes on retry @regression', async ({}, testInfo) => {\n> 50 |     expect(testInfo.retry, 'fails on the first attempt to demonstrate flakiness').toBeGreaterThan(\n     |                                                                                   ^\n  51 |       0,\n  52 |     );\n  53 |   });",
+            "location": {
+              "file": "/home/dev/beacon-reporter/fixtures/demo-suite/tests/demo.spec.ts",
+              "column": 83,
+              "line": 50
+            }
+          }
+        ],
+        "stdout": [],
+        "stderr": [],
+        "attachments": [
+          {
+            "name": "error-context",
+            "contentType": "text/markdown",
+            "path": "/home/dev/beacon-reporter/fixtures/demo-suite/test-results/demo-beacon-demo-suite-fla-6905b--passes-on-retry-regression-beta/error-context.md"
+          }
+        ],
+        "steps": [
+          {
+            "title": "Before Hooks",
+            "category": "hook",
+            "startTime": 1790238720641,
+            "duration": 7,
+            "steps": []
+          },
+          {
+            "title": "fails on the first attempt to demonstrate flakiness",
+            "category": "expect",
+            "startTime": 1790238720648,
+            "duration": 1,
+            "error": {
+              "message": "Error: fails on the first attempt to demonstrate flakiness\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m",
+              "stack": "Error: fails on the first attempt to demonstrate flakiness\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m\n    at /home/dev/beacon-reporter/fixtures/demo-suite/tests/demo.spec.ts:50:83",
+              "snippet": "  48 |\n  49 |   test('flaky: fails first, passes on retry @regression', async ({}, testInfo) => {\n> 50 |     expect(testInfo.retry, 'fails on the first attempt to demonstrate flakiness').toBeGreaterThan(\n     |                                                                                   ^\n  51 |       0,\n  52 |     );\n  53 |   });",
+              "location": {
+                "file": "/home/dev/beacon-reporter/fixtures/demo-suite/tests/demo.spec.ts",
+                "column": 83,
+                "line": 50
+              }
+            },
+            "steps": []
+          },
+          {
+            "title": "After Hooks",
+            "category": "hook",
+            "startTime": 1790238720649,
+            "duration": 10,
+            "steps": []
+          },
+          {
+            "title": "Worker Cleanup",
+            "category": "hook",
+            "startTime": 1790238720659,
+            "duration": 0,
+            "steps": []
+          }
+        ]
+      }
+    },
+    {
+      "type": "onTestEnd",
+      "test": {
+        "title": "flaky: fails first, passes on retry @regression",
+        "titlePath": [
+          "",
+          "alpha",
+          "demo.spec.ts",
+          "beacon demo suite",
+          "flaky: fails first, passes on retry @regression"
+        ],
+        "file": "demo.spec.ts",
+        "line": 49,
+        "column": 3,
+        "projectName": "alpha",
+        "tags": [
+          "@regression"
+        ],
+        "annotations": [],
+        "timeout": 30000,
+        "outcome": "flaky"
+      },
+      "result": {
+        "retry": 1,
+        "workerIndex": 2,
+        "parallelIndex": 0,
+        "startTime": 1790238720966,
+        "duration": 3,
+        "status": "passed",
+        "errors": [],
+        "stdout": [],
+        "stderr": [],
+        "attachments": [],
+        "steps": [
+          {
+            "title": "Before Hooks",
+            "category": "hook",
+            "startTime": 1790238720975,
+            "duration": 6,
+            "steps": []
+          },
+          {
+            "title": "fails on the first attempt to demonstrate flakiness",
+            "category": "expect",
+            "startTime": 1790238720982,
+            "duration": 1,
+            "steps": []
+          },
+          {
+            "title": "After Hooks",
+            "category": "hook",
+            "startTime": 1790238720983,
+            "duration": 4,
+            "steps": []
+          }
+        ]
+      }
+    },
+    {
+      "type": "onTestEnd",
+      "test": {
+        "title": "flaky: fails first, passes on retry @regression",
+        "titlePath": [
+          "",
+          "beta",
+          "demo.spec.ts",
+          "beacon demo suite",
+          "flaky: fails first, passes on retry @regression"
+        ],
+        "file": "demo.spec.ts",
+        "line": 49,
+        "column": 3,
+        "projectName": "beta",
+        "tags": [
+          "@regression"
+        ],
+        "annotations": [],
+        "timeout": 30000,
+        "outcome": "flaky"
+      },
+      "result": {
+        "retry": 1,
+        "workerIndex": 3,
+        "parallelIndex": 1,
+        "startTime": 1790238720966,
+        "duration": 3,
+        "status": "passed",
+        "errors": [],
+        "stdout": [],
+        "stderr": [],
+        "attachments": [],
+        "steps": [
+          {
+            "title": "Before Hooks",
+            "category": "hook",
+            "startTime": 1790238720976,
+            "duration": 6,
+            "steps": []
+          },
+          {
+            "title": "fails on the first attempt to demonstrate flakiness",
+            "category": "expect",
+            "startTime": 1790238720984,
+            "duration": 0,
+            "steps": []
+          },
+          {
+            "title": "After Hooks",
+            "category": "hook",
+            "startTime": 1790238720985,
+            "duration": 2,
+            "steps": []
+          }
+        ]
+      }
+    },
+    {
+      "type": "onTestEnd",
+      "test": {
+        "title": "skipped for demo purposes",
+        "titlePath": [
+          "",
+          "alpha",
+          "demo.spec.ts",
+          "beacon demo suite",
+          "skipped for demo purposes"
+        ],
+        "file": "demo.spec.ts",
+        "line": 55,
+        "column": 3,
+        "projectName": "alpha",
+        "tags": [],
+        "annotations": [
+          {
+            "type": "skip",
+            "description": "demonstrates the skip annotation"
+          }
+        ],
+        "timeout": 30000,
+        "outcome": "skipped"
+      },
+      "result": {
+        "retry": 0,
+        "workerIndex": 2,
+        "parallelIndex": 0,
+        "startTime": 1790238720987,
+        "duration": 0,
+        "status": "skipped",
+        "errors": [],
+        "stdout": [],
+        "stderr": [],
+        "attachments": [],
+        "steps": [
+          {
+            "title": "Before Hooks",
+            "category": "hook",
+            "startTime": 1790238720988,
+            "duration": 2,
+            "steps": []
+          },
+          {
+            "title": "After Hooks",
+            "category": "hook",
+            "startTime": 1790238720990,
+            "duration": 5,
+            "steps": []
+          }
+        ]
+      }
+    },
+    {
+      "type": "onTestEnd",
+      "test": {
+        "title": "skipped for demo purposes",
+        "titlePath": [
+          "",
+          "beta",
+          "demo.spec.ts",
+          "beacon demo suite",
+          "skipped for demo purposes"
+        ],
+        "file": "demo.spec.ts",
+        "line": 55,
+        "column": 3,
+        "projectName": "beta",
+        "tags": [],
+        "annotations": [
+          {
+            "type": "skip",
+            "description": "demonstrates the skip annotation"
+          }
+        ],
+        "timeout": 30000,
+        "outcome": "skipped"
+      },
+      "result": {
+        "retry": 0,
+        "workerIndex": 3,
+        "parallelIndex": 1,
+        "startTime": 1790238720988,
+        "duration": 0,
+        "status": "skipped",
+        "errors": [],
+        "stdout": [],
+        "stderr": [],
+        "attachments": [],
+        "steps": [
+          {
+            "title": "Before Hooks",
+            "category": "hook",
+            "startTime": 1790238720988,
+            "duration": 3,
+            "steps": []
+          },
+          {
+            "title": "After Hooks",
+            "category": "hook",
+            "startTime": 1790238720991,
+            "duration": 4,
+            "steps": []
+          }
+        ]
+      }
+    },
+    {
+      "type": "onTestEnd",
+      "test": {
+        "title": "visual comparison of hero card",
+        "titlePath": [
+          "",
+          "beta",
+          "demo.spec.ts",
+          "beacon demo suite",
+          "visual comparison of hero card"
+        ],
+        "file": "demo.spec.ts",
+        "line": 61,
+        "column": 3,
+        "projectName": "beta",
+        "tags": [],
+        "annotations": [],
+        "timeout": 30000,
+        "outcome": "expected"
+      },
+      "result": {
+        "retry": 0,
+        "workerIndex": 3,
+        "parallelIndex": 1,
+        "startTime": 1790238720996,
+        "duration": 2,
+        "status": "passed",
+        "errors": [],
+        "stdout": [],
+        "stderr": [],
+        "attachments": [
+          {
+            "name": "hero-expected.png",
+            "contentType": "image/png",
+            "size": 235,
+            "bodyBase64": "iVBORw0KGgoAAAANSUhEUgAAAHgAAABQCAIAAABd+SbeAAAAsklEQVR42u3csQnAIBCGUXcNOGHKDOA6goR0cQTTRLjj/XwTvO4sLON+tKGCADRogQYNmgJo0AIdFPq1zwMNGjRo0KBBgwYNegV9Xi1coEGDBg0aNGjQoEE7WFyGoEGDBo0PNGjQoEGDNtCgQYMGDdpAgwYNGjRoAw0aNGjQoA10fuij9p8CDRo0aNCgQYMGDRo0aNCgQYP2qAQaNGjQoA10dGj5bRe0QIMGLdCgBRp0+iZH5mJ+bs0qkgAAAABJRU5ErkJggg=="
+          },
+          {
+            "name": "hero-actual.png",
+            "contentType": "image/png",
+            "size": 234,
+            "bodyBase64": "iVBORw0KGgoAAAANSUhEUgAAAHgAAABQCAIAAABd+SbeAAAAsUlEQVR42u3csQ2AIBCGUXr2b52C0gEYSA2djACFR4J5f74JXnfNpetpWlBCABq0QIMGTQE0aIHeFPq16YEGDRo0aNCgQYMGPYIuZ90u0KBBgwYNGjRo0KAdLC5D0KBBg8YHGjRo0KBBG2jQoEGDBm2gQYMGDRq0gQYNGjRo0AYadNTuIwcFGjRo0KBBgwYNGjRo0KBBgwZtoEGDBg0atH0FLd92QQs0aNACDVqgQf++DnufOx7Cm6r3AAAAAElFTkSuQmCC"
+          },
+          {
+            "name": "hero-diff.png",
+            "contentType": "image/png",
+            "size": 203,
+            "bodyBase64": "iVBORw0KGgoAAAANSUhEUgAAAHgAAABQCAIAAABd+SbeAAAAkklEQVR42u3QwQkAMAgEQYuz/1ZSgqkhj4jILPc/mCi1FAhAgxZo0KAFGrRAgwYt0KAFGjRogQYt0KBBCzRogQYNWqBBCzRo0AINWqBBgxZo0AINGrRAgxZo0KAFGrRAgwatgdAn89Nm/oIGDRo0aNCgQYMGDRo0aNCgd0MLNGjQAg1aoEGDFmjQAg0atECD1lMXchDM5p+g5kMAAAAASUVORK5CYII="
+          }
+        ],
+        "steps": [
+          {
+            "title": "Before Hooks",
+            "category": "hook",
+            "startTime": 1790238720996,
+            "duration": 2,
+            "steps": []
+          },
+          {
+            "title": "Attach \"hero-expected.png\"",
+            "category": "test.attach",
+            "startTime": 1790238720998,
+            "duration": 1,
+            "steps": []
+          },
+          {
+            "title": "Attach \"hero-actual.png\"",
+            "category": "test.attach",
+            "startTime": 1790238720999,
+            "duration": 0,
+            "steps": []
+          },
+          {
+            "title": "Attach \"hero-diff.png\"",
+            "category": "test.attach",
+            "startTime": 1790238721000,
+            "duration": 0,
+            "steps": []
+          },
+          {
+            "title": "images differ by design",
+            "category": "expect",
+            "startTime": 1790238721000,
+            "duration": 0,
+            "steps": []
+          },
+          {
+            "title": "After Hooks",
+            "category": "hook",
+            "startTime": 1790238721000,
+            "duration": 2,
+            "steps": []
+          }
+        ]
+      }
+    },
+    {
+      "type": "onTestEnd",
+      "test": {
+        "title": "visual comparison of hero card",
+        "titlePath": [
+          "",
+          "alpha",
+          "demo.spec.ts",
+          "beacon demo suite",
+          "visual comparison of hero card"
+        ],
+        "file": "demo.spec.ts",
+        "line": 61,
+        "column": 3,
+        "projectName": "alpha",
+        "tags": [],
+        "annotations": [],
+        "timeout": 30000,
+        "outcome": "expected"
+      },
+      "result": {
+        "retry": 0,
+        "workerIndex": 2,
+        "parallelIndex": 0,
+        "startTime": 1790238720995,
+        "duration": 2,
+        "status": "passed",
+        "errors": [],
+        "stdout": [],
+        "stderr": [],
+        "attachments": [
+          {
+            "name": "hero-expected.png",
+            "contentType": "image/png",
+            "size": 235,
+            "bodyBase64": "iVBORw0KGgoAAAANSUhEUgAAAHgAAABQCAIAAABd+SbeAAAAsklEQVR42u3csQnAIBCGUXcNOGHKDOA6goR0cQTTRLjj/XwTvO4sLON+tKGCADRogQYNmgJo0AIdFPq1zwMNGjRo0KBBgwYNegV9Xi1coEGDBg0aNGjQoEE7WFyGoEGDBo0PNGjQoEGDNtCgQYMGDdpAgwYNGjRoAw0aNGjQoA10fuij9p8CDRo0aNCgQYMGDRo0aNCgQYP2qAQaNGjQoA10dGj5bRe0QIMGLdCgBRp0+iZH5mJ+bs0qkgAAAABJRU5ErkJggg=="
+          },
+          {
+            "name": "hero-actual.png",
+            "contentType": "image/png",
+            "size": 234,
+            "bodyBase64": "iVBORw0KGgoAAAANSUhEUgAAAHgAAABQCAIAAABd+SbeAAAAsUlEQVR42u3csQ2AIBCGUXr2b52C0gEYSA2djACFR4J5f74JXnfNpetpWlBCABq0QIMGTQE0aIHeFPq16YEGDRo0aNCgQYMGPYIuZ90u0KBBgwYNGjRo0KAdLC5D0KBBg8YHGjRo0KBBG2jQoEGDBm2gQYMGDRq0gQYNGjRo0AYadNTuIwcFGjRo0KBBgwYNGjRo0KBBgwZtoEGDBg0atH0FLd92QQs0aNACDVqgQf++DnufOx7Cm6r3AAAAAElFTkSuQmCC"
+          },
+          {
+            "name": "hero-diff.png",
+            "contentType": "image/png",
+            "size": 203,
+            "bodyBase64": "iVBORw0KGgoAAAANSUhEUgAAAHgAAABQCAIAAABd+SbeAAAAkklEQVR42u3QwQkAMAgEQYuz/1ZSgqkhj4jILPc/mCi1FAhAgxZo0KAFGrRAgwYt0KAFGjRogQYt0KBBCzRogQYNWqBBCzRo0AINWqBBgxZo0AINGrRAgxZo0KAFGrRAgwatgdAn89Nm/oIGDRo0aNCgQYMGDRo0aNCgd0MLNGjQAg1aoEGDFmjQAg0atECD1lMXchDM5p+g5kMAAAAASUVORK5CYII="
+          }
+        ],
+        "steps": [
+          {
+            "title": "Before Hooks",
+            "category": "hook",
+            "startTime": 1790238720995,
+            "duration": 3,
+            "steps": []
+          },
+          {
+            "title": "Attach \"hero-expected.png\"",
+            "category": "test.attach",
+            "startTime": 1790238720998,
+            "duration": 1,
+            "steps": []
+          },
+          {
+            "title": "Attach \"hero-actual.png\"",
+            "category": "test.attach",
+            "startTime": 1790238720999,
+            "duration": 0,
+            "steps": []
+          },
+          {
+            "title": "Attach \"hero-diff.png\"",
+            "category": "test.attach",
+            "startTime": 1790238720999,
+            "duration": 0,
+            "steps": []
+          },
+          {
+            "title": "images differ by design",
+            "category": "expect",
+            "startTime": 1790238720999,
+            "duration": 0,
+            "steps": []
+          },
+          {
+            "title": "After Hooks",
+            "category": "hook",
+            "startTime": 1790238720999,
+            "duration": 3,
+            "steps": []
+          }
+        ]
+      }
+    },
+    {
+      "type": "onStdOut",
+      "chunk": {
+        "text": "some captured stdout\n"
+      },
+      "testTitlePath": [
+        "",
+        "alpha",
+        "demo.spec.ts",
+        "beacon demo suite",
+        "slow test with stdout"
+      ]
+    },
+    {
+      "type": "onStdOut",
+      "chunk": {
+        "text": "some captured stdout\n"
+      },
+      "testTitlePath": [
+        "",
+        "beta",
+        "demo.spec.ts",
+        "beacon demo suite",
+        "slow test with stdout"
+      ]
+    },
+    {
+      "type": "onTestEnd",
+      "test": {
+        "title": "slow test with stdout",
+        "titlePath": [
+          "",
+          "alpha",
+          "demo.spec.ts",
+          "beacon demo suite",
+          "slow test with stdout"
+        ],
+        "file": "demo.spec.ts",
+        "line": 68,
+        "column": 3,
+        "projectName": "alpha",
+        "tags": [],
+        "annotations": [
+          {
+            "type": "slow"
+          }
+        ],
+        "timeout": 90000,
+        "outcome": "expected"
+      },
+      "result": {
+        "retry": 0,
+        "workerIndex": 2,
+        "parallelIndex": 0,
+        "startTime": 1790238721002,
+        "duration": 301,
+        "status": "passed",
+        "errors": [],
+        "stdout": [
+          {
+            "text": "some captured stdout\n"
+          }
+        ],
+        "stderr": [],
+        "attachments": [],
+        "steps": [
+          {
+            "title": "Before Hooks",
+            "category": "hook",
+            "startTime": 1790238721007,
+            "duration": 2,
+            "steps": []
+          },
+          {
+            "title": "Expect \"toBe\"",
+            "category": "expect",
+            "startTime": 1790238721310,
+            "duration": 0,
+            "steps": []
+          },
+          {
+            "title": "After Hooks",
+            "category": "hook",
+            "startTime": 1790238721310,
+            "duration": 2,
+            "steps": []
+          }
+        ]
+      }
+    },
+    {
+      "type": "onTestEnd",
+      "test": {
+        "title": "slow test with stdout",
+        "titlePath": [
+          "",
+          "beta",
+          "demo.spec.ts",
+          "beacon demo suite",
+          "slow test with stdout"
+        ],
+        "file": "demo.spec.ts",
+        "line": 68,
+        "column": 3,
+        "projectName": "beta",
+        "tags": [],
+        "annotations": [
+          {
+            "type": "slow"
+          }
+        ],
+        "timeout": 90000,
+        "outcome": "expected"
+      },
+      "result": {
+        "retry": 0,
+        "workerIndex": 3,
+        "parallelIndex": 1,
+        "startTime": 1790238721002,
+        "duration": 302,
+        "status": "passed",
+        "errors": [],
+        "stdout": [
+          {
+            "text": "some captured stdout\n"
+          }
+        ],
+        "stderr": [],
+        "attachments": [],
+        "steps": [
+          {
+            "title": "Before Hooks",
+            "category": "hook",
+            "startTime": 1790238721007,
+            "duration": 3,
+            "steps": []
+          },
+          {
+            "title": "Expect \"toBe\"",
+            "category": "expect",
+            "startTime": 1790238721311,
+            "duration": 0,
+            "steps": []
+          },
+          {
+            "title": "After Hooks",
+            "category": "hook",
+            "startTime": 1790238721311,
+            "duration": 2,
+            "steps": []
+          }
+        ]
+      }
+    },
+    {
+      "type": "onEnd",
+      "status": "passed"
+    }
+  ]
+}

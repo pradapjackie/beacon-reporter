@@ -1,0 +1,38 @@
+{
+  "total": {
+    "lines": { "total": 1240, "covered": 1042, "pct": 84.03 },
+    "statements": { "total": 1310, "covered": 1086, "pct": 82.9 },
+    "functions": { "total": 212, "covered": 164, "pct": 77.36 },
+    "branches": { "total": 486, "covered": 352, "pct": 72.43 }
+  },
+  "/app/src/checkout/cart.ts": {
+    "lines": { "pct": 91.2 },
+    "statements": { "pct": 90.1 },
+    "functions": { "pct": 88 },
+    "branches": { "pct": 81 }
+  },
+  "/app/src/checkout/discounts.ts": {
+    "lines": { "pct": 64.5 },
+    "statements": { "pct": 63.2 },
+    "functions": { "pct": 55 },
+    "branches": { "pct": 48.9 }
+  },
+  "/app/src/payments/gateway.ts": {
+    "lines": { "pct": 41.7 },
+    "statements": { "pct": 40.3 },
+    "functions": { "pct": 33.3 },
+    "branches": { "pct": 28.6 }
+  },
+  "/app/src/search/index.ts": {
+    "lines": { "pct": 88.9 },
+    "statements": { "pct": 87.5 },
+    "functions": { "pct": 85 },
+    "branches": { "pct": 74 }
+  },
+  "/app/src/auth/session.ts": {
+    "lines": { "pct": 96.4 },
+    "statements": { "pct": 95.8 },
+    "functions": { "pct": 100 },
+    "branches": { "pct": 90 }
+  }
+}

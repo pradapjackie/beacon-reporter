@@ -1,0 +1,18 @@
+node_modules/
+dist/
+.turbo/
+*.log
+.env
+.env.*
+
+# generated reports & playwright output
+beacon-report/
+beacon-report-merged/
+blob-report/
+blob-shard-*/
+test-results/
+playwright-report/
+.beacon-history/
+
+# playwright-bdd generated specs
+.features-gen/

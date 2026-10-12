@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm build
+      - run: pnpm typecheck
+      - run: pnpm test
+      # Dogfood: run the fixture suite with the beacon reporter attached.
+      - run: pnpm demo
+      # TODO Phase 2: matrix over Playwright 1.40 → latest.
+      # TODO Phase 4: perf-budget job with a synthetic 50k-test blob.

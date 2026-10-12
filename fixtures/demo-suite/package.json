@@ -1,0 +1,20 @@
+{
+  "name": "@beacon-report/demo-suite",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Dogfood Playwright suite — fixture data source for reporter development",
+  "type": "module",
+  "scripts": {
+    "demo": "playwright test",
+    "demo:sharded": "rm -rf blob-report blob-shard-1 blob-shard-2 beacon-report-merged && PLAYWRIGHT_BLOB_OUTPUT_DIR=blob-shard-1 playwright test --shard=1/2 --reporter=blob && PLAYWRIGHT_BLOB_OUTPUT_DIR=blob-shard-2 playwright test --shard=2/2 --reporter=blob && mkdir blob-report && cp blob-shard-1/*.zip blob-shard-2/*.zip blob-report/ && beacon merge blob-report --out beacon-report-merged",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@beacon-report/cli": "workspace:*",
+    "beacon-reporter": "workspace:*",
+    "@playwright/test": "^1.49.1",
+    "@types/node": "^22.10.5",
+    "typescript": "^5.7.2"
+  }
+}

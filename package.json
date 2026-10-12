@@ -1,0 +1,27 @@
+{
+  "name": "beacon-reporter-monorepo",
+  "private": true,
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "demo": "pnpm --filter @beacon-report/demo-suite demo",
+    "demo:sharded": "pnpm --filter @beacon-report/demo-suite demo:sharded",
+    "record-fixtures": "RECORD_FIXTURES=1 pnpm --filter @beacon-report/demo-suite demo",
+    "open:demo": "beacon open fixtures/demo-suite/beacon-report",
+    "bench": "node packages/reporter/scripts/bench.mjs",
+    "changeset": "changeset"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@beacon-report/cli": "workspace:*",
+    "@changesets/cli": "^2.27.11",
+    "turbo": "^2.3.3"
+  }
+}

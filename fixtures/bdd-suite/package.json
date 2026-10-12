@@ -1,0 +1,19 @@
+{
+  "name": "@beacon-report/bdd-suite",
+  "version": "0.0.0",
+  "private": true,
+  "description": "playwright-bdd fixture suite — validates Beacon's first-class BDD support",
+  "type": "module",
+  "scripts": {
+    "demo": "bddgen && playwright test",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@beacon-report/cli": "workspace:*",
+    "beacon-reporter": "workspace:*",
+    "@playwright/test": "^1.49.1",
+    "@types/node": "^22.10.5",
+    "playwright-bdd": "^9.2.1",
+    "typescript": "^5.7.2"
+  }
+}
