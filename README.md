@@ -118,7 +118,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). Architecture and the full phased plan li
 - Email: [pradapjackie@gmail.com](mailto:pradapjackie@gmail.com)
 - GitHub: [github.com/pradapjackie](https://github.com/pradapjackie)
 - LinkedIn: [linkedin.com/in/pradap-pandiyan](https://www.linkedin.com/in/pradap-pandiyan)
-- Website: [pradappandiyan.medium.com](https://pradappandiyan.medium.com/)
+- Website: [www.pradappandiyan.com](https://www.pradappandiyan.com)
 
 ## License
 

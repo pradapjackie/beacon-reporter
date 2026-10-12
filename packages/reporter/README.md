@@ -34,7 +34,7 @@ Requires `@playwright/test` ≥ 1.40 and Node ≥ 20.
 - Email: [pradapjackie@gmail.com](mailto:pradapjackie@gmail.com)
 - GitHub: [github.com/pradapjackie](https://github.com/pradapjackie)
 - LinkedIn: [linkedin.com/in/pradap-pandiyan](https://www.linkedin.com/in/pradap-pandiyan)
-- Website: [pradappandiyan.medium.com](https://pradappandiyan.medium.com/)
+- Website: [www.pradappandiyan.com](https://www.pradappandiyan.com)
 
 ## License
 
