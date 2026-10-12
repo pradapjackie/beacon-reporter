@@ -11,7 +11,7 @@ reporter: [['beacon-reporter', { /* options */ }]]
 | `outputFolder` | `string` | `'beacon-report'` | Where the report is written. `BEACON_OUTPUT_FOLDER` env var overrides it (used by `beacon merge`, where reporter options can't be passed). |
 | `title` | `string` | — | Report title shown in the header and browser tab. |
 | `copyUi` | `boolean` | `true` | Copy the prebuilt report UI next to the data. Disable only if you serve the UI separately. |
-| `dashboard.cards` | `string[]` | `['outcomes', 'trend', 'slowest', 'projects']` | Which dashboard cards to show, in order. Unknown ids warn and are dropped. See the full list below. |
+| `dashboard.cards` | `string[]` | every built-in card | Which dashboard cards to show, in order. Unknown ids warn and are dropped. See the full list below. |
 | `dashboard.slowest` | `number` | `5` | How many entries the "Slowest tests" card holds. |
 | `environment` | `Record<string, string>` | — | Extra key-values on the Environment card (`os` and `node` are added automatically). |
 | `links` | `Record<string, string>` | — | URL template per annotation type; `{}` is replaced by the annotation description. E.g. `{ issue: 'https://jira.example.com/browse/{}' }` turns `issue: PROJ-123` annotations into links. |

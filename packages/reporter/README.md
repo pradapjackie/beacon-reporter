@@ -27,6 +27,15 @@ npx beacon open beacon-report
 
 Requires `@playwright/test` ≥ 1.40 and Node ≥ 20.
 
+## Contact
+
+[Pradap Pandiyan](https://github.com/pradapjackie)
+
+- Email: [pradapjackie@gmail.com](mailto:pradapjackie@gmail.com)
+- GitHub: [github.com/pradapjackie](https://github.com/pradapjackie)
+- LinkedIn: [linkedin.com/in/pradap-pandiyan](https://www.linkedin.com/in/pradap-pandiyan)
+- Website: [pradappandiyan.medium.com](https://pradappandiyan.medium.com/)
+
 ## License
 
 [MIT](https://github.com/pradapjackie/beacon-reporter/blob/main/LICENSE)

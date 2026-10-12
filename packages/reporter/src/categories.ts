@@ -15,16 +15,18 @@ export interface CategoryRule {
 }
 
 const BUILT_IN: Array<{ name: string; test: (message: string, stack: string) => boolean }> = [
+  {
+    name: 'Visual diff',
+    test: (m) => /toHaveScreenshot|screenshot comparison|snapshot.*(differ|mismatch)/i.test(m),
+  },
+  // Expect failures mention "Timeout:" when a locator assertion waits out.
+  // Those are assertions, not test timeouts, and they also contain "locator".
+  { name: 'Assertion', test: (m) => /expect\(|expected.*received|assert/i.test(m) },
   { name: 'Timeout', test: (m) => /timed? ?out|timeout of|exceeded.*timeout/i.test(m) },
   {
     name: 'Selector not found',
     test: (m) => /locator|selector|strict mode violation|element is not/i.test(m),
   },
-  {
-    name: 'Visual diff',
-    test: (m) => /toHaveScreenshot|screenshot comparison|snapshot.*(differ|mismatch)/i.test(m),
-  },
-  { name: 'Assertion', test: (m) => /expect\(|expected.*received|assert/i.test(m) },
 ];
 
 const FALLBACK = 'Other failures';

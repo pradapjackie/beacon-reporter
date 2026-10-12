@@ -348,12 +348,8 @@ export const DASHBOARD_CARDS = [
   'requirements',
 ] as const;
 export type DashboardCard = (typeof DASHBOARD_CARDS)[number];
-export const DEFAULT_DASHBOARD_CARDS: DashboardCard[] = [
-  'outcomes',
-  'trend',
-  'slowest',
-  'projects',
-];
+/** Every built-in card. A report with no `dashboard.cards` option shows this set. */
+export const DEFAULT_DASHBOARD_CARDS: DashboardCard[] = [...DASHBOARD_CARDS];
 
 /** One attempt on the worker timeline; `start` is ms relative to the run start. */
 export const timelineEntrySchema = z.object({

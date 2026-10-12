@@ -1,9 +1,14 @@
 {
   "name": "beacon-reporter",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Beacon \u2014 a beautiful, fast, static HTML reporter for Playwright. Allure-grade analytics, one npm install",
   "keywords": ["playwright", "reporter", "html", "report", "testing", "allure", "beacon"],
   "license": "MIT",
+  "author": {
+    "name": "Pradap Pandiyan",
+    "email": "pradapjackie@gmail.com",
+    "url": "https://github.com/pradapjackie"
+  },
   "homepage": "https://github.com/pradapjackie/beacon-reporter#readme",
   "bugs": {
     "url": "https://github.com/pradapjackie/beacon-reporter/issues"

@@ -248,9 +248,11 @@ function TrendCard({ history }: { history: HistoryData | null | undefined }) {
           <div>
             <div className="text-sm font-medium text-ink-2">Trend appears with run history</div>
             <div className="mt-1 text-xs text-ink-3">
-              {history === null
-                ? 'This run has history disabled or is the first recorded run — rerun to start the trend.'
-                : 'Loading…'}
+              {history === undefined
+                ? 'Loading…'
+                : history === null || runs.length === 0
+                  ? 'History is turned off for this report.'
+                  : 'This is the first recorded run. Rerun the suite to draw the trend.'}
             </div>
           </div>
         </div>

@@ -111,6 +111,15 @@ pnpm bench        # 50k-test synthetic benchmark with enforced budgets
 
 See [CONTRIBUTING.md](CONTRIBUTING.md). Architecture and the full phased plan live in [ROADMAP.md](ROADMAP.md).
 
+## Contact
+
+[Pradap Pandiyan](https://github.com/pradapjackie)
+
+- Email: [pradapjackie@gmail.com](mailto:pradapjackie@gmail.com)
+- GitHub: [github.com/pradapjackie](https://github.com/pradapjackie)
+- LinkedIn: [linkedin.com/in/pradap-pandiyan](https://www.linkedin.com/in/pradap-pandiyan)
+- Website: [pradappandiyan.medium.com](https://pradappandiyan.medium.com/)
+
 ## License
 
 [MIT](LICENSE)

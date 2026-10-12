@@ -36,6 +36,9 @@ describe('categorize', () => {
   it('applies built-in rules to failing tests', () => {
     const details = [
       failing('Timed out 5000ms waiting for locator'),
+      failing(
+        'Error: expect(locator).toHaveText(expected) failed\nTimeout: 5000ms\nReceived: "Wrong title"',
+      ),
       failing('expect(received).toBe(expected)'),
       failing('strict mode violation: locator resolved to 3 elements'),
       failing('Screenshot comparison failed: 120 pixels differ'),
@@ -44,6 +47,7 @@ describe('categorize', () => {
     categorize(details);
     expect(details.map((d) => d.category)).toEqual([
       'Timeout',
+      'Assertion',
       'Assertion',
       'Selector not found',
       'Visual diff',
