@@ -1,0 +1,62 @@
+name: Publish
+
+# Push a tag that matches packages/reporter/package.json, for example v0.1.2.
+# npm auth is OIDC (trusted publishing). On the package, add a trusted publisher:
+#   user pradapjackie, repo beacon-reporter, workflow filename publish.yml,
+#   allow npm publish. No NPM_TOKEN secret is used.
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  id-token: write
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+          cache: pnpm
+
+      - name: Install an npm CLI that supports trusted publishing
+        run: npm install -g npm@11
+
+      - name: Require the tag to match the package version
+        run: |
+          pkg=$(node -p "require('./packages/reporter/package.json').version")
+          tag="${GITHUB_REF_NAME#v}"
+          if [ "$pkg" != "$tag" ]; then
+            echo "Tag ${GITHUB_REF_NAME} does not match beacon-reporter@${pkg}"
+            exit 1
+          fi
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm typecheck
+      - run: pnpm test
+
+      - name: Require the UI and CLI inside the package that will be published
+        run: |
+          test -f packages/reporter/dist/index.js
+          test -f packages/reporter/dist/cli/index.js
+          test -f packages/reporter/dist/ui/index.html
+
+      - name: Publish to npm
+        working-directory: packages/reporter
+        run: npm publish --access public --provenance
+
+      - name: Create the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "beacon-reporter ${GITHUB_REF_NAME#v}" \
+            --generate-notes
