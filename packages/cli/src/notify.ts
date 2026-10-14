@@ -26,10 +26,32 @@ async function readCounts(reportDir: string): Promise<{ counts: Counts; title?: 
  * (works everywhere); `slack` sends Block Kit blocks; `teams` sends a
  * MessageCard with a status theme color.
  */
+/** GitHub-flavored summarize() output, rewritten for Slack mrkdwn. */
+export function toSlackMrkdwn(markdown: string, reportUrl?: string): string {
+  const body = markdown
+    .replace(/^#{1,6}\s+(.+)$/gm, '*$1*')
+    .replace(/\*\*(.+?)\*\*/g, '*$1*')
+    .replace(/^\|.*\|$/gm, (line) => {
+      if (/^\|?\s*:?-{3,}/.test(line)) return '';
+      const cells = line
+        .split('|')
+        .map((cell) => cell.trim())
+        .filter(Boolean);
+      return cells.length > 0 ? `• ${cells.join(' — ')}` : '';
+    })
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+  const link = reportUrl ? `\n<${reportUrl}|Open the report>` : '';
+  const room = 2900 - link.length;
+  const clipped = body.length > room ? `${body.slice(0, room).trimEnd()}…` : body;
+  return `${clipped}${link}`;
+}
+
 export async function notify(
   reportDir: string,
   webhookUrl: string,
   format: NotifyFormat = 'plain',
+  reportUrl?: string,
 ): Promise<void> {
   const markdown = await summarize(reportDir);
   const text = markdown.length > 3500 ? `${markdown.slice(0, 3500)}\n…(truncated)` : markdown;
@@ -44,6 +66,7 @@ export async function notify(
       `Flaky: ${counts.flaky}`,
       `Skipped: ${counts.skipped}`,
     ];
+    const digest = toSlackMrkdwn(markdown, reportUrl);
     if (format === 'slack') {
       body = {
         blocks: [
@@ -52,7 +75,7 @@ export async function notify(
             type: 'section',
             fields: fields.map((f) => ({ type: 'mrkdwn', text: `*${f.replace(': ', ':* ')}` })),
           },
-          { type: 'section', text: { type: 'mrkdwn', text: text.slice(0, 2900) } },
+          { type: 'section', text: { type: 'mrkdwn', text: digest } },
         ],
       };
     } else {
@@ -63,7 +86,7 @@ export async function notify(
         summary: heading,
         title: heading,
         text: fields.join(' · '),
-        sections: [{ text: text.slice(0, 2900) }],
+        sections: [{ text: digest }],
       };
     }
   }

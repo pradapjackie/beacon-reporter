@@ -20,7 +20,16 @@ export interface GateResult {
 }
 
 export async function gate(reportDir: string, options: GateOptions): Promise<GateResult> {
-  const raw = await readFile(path.join(reportDir, 'data', 'manifest.js'), 'utf8');
+  const manifestPath = path.join(reportDir, 'data', 'manifest.js');
+  let raw: string;
+  try {
+    raw = await readFile(manifestPath, 'utf8');
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+      throw new Error(`No report found at ${reportDir}`);
+    }
+    throw error;
+  }
   const manifest = JSON.parse(raw.slice(raw.indexOf(', ') + 2, raw.lastIndexOf(');'))) as {
     counts: GateResult['counts'];
   };

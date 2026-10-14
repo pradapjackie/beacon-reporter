@@ -1,15 +1,29 @@
 import { useEffect, useState } from 'react';
 
 /** Minimal image lightbox: click backdrop or Esc to close, click image to zoom. */
-export function Lightbox({ src, alt, onClose }: { src: string; alt: string; onClose: () => void }) {
+export function Lightbox({
+  src,
+  alt,
+  onClose,
+  onPrev,
+  onNext,
+}: {
+  src: string;
+  alt: string;
+  onClose: () => void;
+  onPrev?: () => void;
+  onNext?: () => void;
+}) {
   const [zoom, setZoom] = useState(false);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
+      else if (e.key === 'ArrowLeft') onPrev?.();
+      else if (e.key === 'ArrowRight') onNext?.();
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [onClose]);
+  }, [onClose, onPrev, onNext]);
 
   return (
     // biome-ignore lint/a11y/useKeyWithClickEvents: Esc handled globally above
@@ -31,6 +45,30 @@ export function Lightbox({ src, alt, onClose }: { src: string; alt: string; onCl
             : 'max-h-full max-w-full cursor-zoom-in rounded-lg object-contain'
         }
       />
+      {onPrev && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onPrev();
+          }}
+          className="fixed left-4 top-1/2 -translate-y-1/2 rounded-lg bg-card px-3 py-2 text-sm text-ink shadow-lg"
+        >
+          Prev
+        </button>
+      )}
+      {onNext && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onNext();
+          }}
+          className="fixed right-4 top-1/2 -translate-y-1/2 rounded-lg bg-card px-3 py-2 text-sm text-ink shadow-lg"
+        >
+          Next
+        </button>
+      )}
       <a
         href={src}
         target="_blank"

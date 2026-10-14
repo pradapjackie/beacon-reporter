@@ -55,7 +55,11 @@ export function ConfigPage() {
       </div>
 
       {projects && projects.length > 0 && (
-        <div className="overflow-x-auto rounded-[14px] border border-edge bg-card">
+        <div
+          // biome-ignore lint/a11y/noNoninteractiveTabindex: axe requires scrollable regions be keyboard-reachable
+          tabIndex={0}
+          className="overflow-x-auto rounded-[14px] border border-edge bg-card"
+        >
           <table className="w-full text-[13px]">
             <thead>
               <tr className="border-b border-edge-2 text-left text-[11px] uppercase tracking-wide text-ink-3">

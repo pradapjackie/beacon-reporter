@@ -40,7 +40,11 @@ export interface BeaconReporterOptions {
   history?: false | { dir?: string; retain?: number };
   /** Render open-in-editor (vscode://) links — records the absolute rootDir. */
   editorLinks?: boolean;
-  /** PII scrubbing: regexes applied to error text and stdio before writing. */
+  /**
+   * PII scrubbing: regexes applied to error text, step errors, stdio, embedded
+   * source, and text-like attachments (including Playwright's error-context)
+   * before writing. Category rules still see the original text.
+   */
   scrub?: Array<{ pattern: string; flags?: string; replacement?: string }>;
   /**
    * Embed a source snippet per test (failures always; every test when the run
@@ -123,11 +127,38 @@ function toPosix(p: string): string {
   return p.split(path.sep).join('/');
 }
 
+function failureText(result: TestResult): string {
+  const parts: string[] = [];
+  const walk = (steps: TestStep[] | undefined) => {
+    for (const step of steps ?? []) {
+      if (step.error?.message) parts.push(step.error.message);
+      if (step.error?.stack) parts.push(step.error.stack);
+      walk(step.steps);
+    }
+  };
+  for (const error of result.errors ?? []) {
+    if (error.message) parts.push(error.message);
+    if (error.stack) parts.push(error.stack);
+  }
+  walk(result.steps);
+  return parts.join('\n');
+}
+
+function categoryTextOf(tests: Map<string, CollectedTest>): Map<string, string> {
+  const out = new Map<string, string>();
+  for (const [caseId, collected] of tests) {
+    if (collected.categoryText) out.set(caseId, collected.categoryText);
+  }
+  return out;
+}
+
 interface CollectedTest {
   test: TestCase;
   projectName: string;
   file: string;
   detail: TestDetail;
+  /** Unscrubbed error text, kept so category rules run before redaction. */
+  categoryText: string;
 }
 
 export class BeaconReporter implements Reporter {
@@ -154,7 +185,8 @@ export class BeaconReporter implements Reporter {
     // like `playwright merge-reports --reporter beacon-reporter`.
     this.options = {
       ...options,
-      outputFolder: options.outputFolder ?? process.env.BEACON_OUTPUT_FOLDER ?? 'beacon-report',
+      // Env wins so `beacon merge` can redirect output without a reporter config.
+      outputFolder: process.env.BEACON_OUTPUT_FOLDER ?? options.outputFolder ?? 'beacon-report',
       copyUi: options.copyUi ?? true,
     };
     this.watch = options.watch ?? process.env.BEACON_WATCH === '1';
@@ -173,10 +205,17 @@ export class BeaconReporter implements Reporter {
     const baseDir = config.configFile ? path.dirname(config.configFile) : process.cwd();
     this.outputDir = path.resolve(baseDir, this.options.outputFolder);
     this.store = new AttachmentStore(path.join(this.outputDir, 'attachments'));
-    this.historyDir =
-      this.options.history === false
-        ? undefined
-        : path.resolve(baseDir, this.options.history?.dir ?? '.beacon-history');
+    // BEACON_HISTORY=0 turns history off (generate/merge). BEACON_HISTORY_DIR
+    // points at a directory next to a CLI-generated report instead of cwd.
+    if (process.env.BEACON_HISTORY === '0') {
+      this.historyDir = undefined;
+    } else if (process.env.BEACON_HISTORY_DIR) {
+      this.historyDir = path.resolve(this.outputDir, process.env.BEACON_HISTORY_DIR);
+    } else if (this.options.history === false) {
+      this.historyDir = undefined;
+    } else {
+      this.historyDir = path.resolve(baseDir, this.options.history?.dir ?? '.beacon-history');
+    }
     this.logoPath = this.options.branding?.logo
       ? path.resolve(baseDir, this.options.branding.logo)
       : undefined;
@@ -195,7 +234,10 @@ export class BeaconReporter implements Reporter {
       }
     });
     if (rules.length > 0) {
-      this.scrub = (text) => rules.reduce((acc, r) => acc.replace(r.re, r.to), text);
+      this.scrub = Object.assign(
+        (text: string) => rules.reduce((acc, r) => acc.replace(r.re, r.to), text),
+        { active: true },
+      );
     }
   }
 
@@ -259,6 +301,7 @@ export class BeaconReporter implements Reporter {
         environment: this.options.environment,
         links: this.options.links,
         categories: this.options.categories,
+        categoryText: categoryTextOf(this.tests),
         // History only records finished runs — never interim snapshots.
         history: undefined,
         editorLinks: this.options.editorLinks,
@@ -278,6 +321,7 @@ export class BeaconReporter implements Reporter {
     const file = toPosix(path.relative(this.config.rootDir, test.location.file));
     const caseId = computeCaseId(projectName, file, test.titlePath());
     const record = await toResultRecord(result, this.store, this.scrub);
+    const rawFailure = failureText(result);
 
     // Custom metrics convention: a `beacon:metrics` JSON attachment.
     let metrics: Record<string, number> | undefined;
@@ -296,6 +340,7 @@ export class BeaconReporter implements Reporter {
     const existing = this.tests.get(caseId);
     if (existing) {
       existing.detail.results.push(record);
+      if (rawFailure) existing.categoryText = `${existing.categoryText}\n${rawFailure}`;
       if (metrics) existing.detail.metrics = { ...existing.detail.metrics, ...metrics };
       return;
     }
@@ -303,6 +348,7 @@ export class BeaconReporter implements Reporter {
       test,
       projectName,
       file,
+      categoryText: rawFailure,
       detail: {
         caseId,
         title: test.title,
@@ -371,20 +417,46 @@ export class BeaconReporter implements Reporter {
       }
     }
 
+    const wall = Date.now() - this.startTime;
+    const spans = details.flatMap((detail) =>
+      detail.results
+        .filter((attempt) => attempt.startTime > 0)
+        .map((attempt) => ({
+          start: attempt.startTime,
+          end: attempt.startTime + attempt.duration,
+        })),
+    );
+    const span =
+      spans.length > 0
+        ? Math.max(...spans.map((s) => s.end)) - Math.min(...spans.map((s) => s.start))
+        : 0;
+    // A blob merge finishes in milliseconds while the tests ran for much longer.
+    const duration = span > wall ? span : wall;
+    let config = this.config;
+    if (!this.config?.configFile) {
+      const lanes = new Set<number>();
+      for (const detail of details) {
+        for (const attempt of detail.results) {
+          if (attempt.parallelIndex >= 0) lanes.add(attempt.parallelIndex);
+        }
+      }
+      if (lanes.size > 0) config = { ...this.config, workers: lanes.size };
+    }
     await writeReport({
       outputDir: this.outputDir,
       status: result.status,
       startTime: this.startTime,
-      duration: Date.now() - this.startTime,
+      duration,
       details,
       errors: this.runErrors,
-      config: this.config,
+      config,
       copyUi: this.options.copyUi,
       title: this.options.title,
       dashboard: this.options.dashboard,
       environment: this.options.environment,
       links: this.options.links,
       categories: this.options.categories,
+      categoryText: categoryTextOf(this.tests),
       history: this.historyDir
         ? {
             dir: this.historyDir,

@@ -4,6 +4,7 @@ import { Link, useNavigate, useSearch } from '@tanstack/react-router';
 import { useMemo, useState } from 'react';
 import { CopyChip } from '../components/copy-chip';
 import { IconChevronDown, IconSearch } from '../components/icons';
+import { Lightbox } from '../components/lightbox';
 import { attachmentHref } from '../lib/attachments';
 import { loadChunk } from '../lib/beacon-data';
 import { OUTCOME_DOT, OUTCOME_LABEL } from '../lib/format';
@@ -21,6 +22,7 @@ interface GalleryItem {
   title: string;
   projectName: string;
   outcome: TestOutcome;
+  kind: 'image' | 'video';
 }
 
 /** One toHaveScreenshot baseline: expected/actual/diff triple + rerun info. */
@@ -57,7 +59,12 @@ export function GalleryPage() {
             const attachments = result.attachments as AttachmentRef[];
             for (const attachment of attachments) {
               const href = attachmentHref(attachment);
-              if (!href || !attachment.contentType.startsWith('image/')) continue;
+              const kind = attachment.contentType.startsWith('image/')
+                ? 'image'
+                : attachment.contentType.startsWith('video/')
+                  ? 'video'
+                  : undefined;
+              if (!href || !kind) continue;
               images.push({
                 href,
                 name: attachment.name,
@@ -65,6 +72,7 @@ export function GalleryPage() {
                 title: detail.title,
                 projectName: detail.projectName,
                 outcome: detail.outcome,
+                kind,
               });
             }
             for (const visualDiff of result.visualDiffs ?? []) {
@@ -111,6 +119,7 @@ export function GalleryPage() {
     return counts;
   }, [all]);
 
+  const [openAt, setOpenAt] = useState<number | null>(null);
   const items = useMemo(() => {
     const q = (search.q ?? '').trim().toLowerCase();
     return all.filter((item) => {
@@ -133,7 +142,7 @@ export function GalleryPage() {
   if (all.length === 0 && visuals.length === 0) {
     return (
       <div className="rounded-[14px] border border-dashed border-edge p-10 text-center text-ink-3">
-        No image attachments in this report.
+        No screenshots or videos in this report.
       </div>
     );
   }
@@ -231,7 +240,7 @@ export function GalleryPage() {
 
           {items.length === 0 ? (
             <div className="rounded-[14px] border border-dashed border-edge p-10 text-center text-ink-3">
-              No images match the current filters.
+              Nothing matches the current filters.
             </div>
           ) : (
             <div className="grid grid-cols-[repeat(auto-fill,minmax(min(230px,100%),1fr))] gap-4">
@@ -241,14 +250,24 @@ export function GalleryPage() {
                   key={i}
                   className="overflow-hidden rounded-[12px] border border-edge bg-card"
                 >
-                  <a href={item.href} target="_blank" rel="noreferrer">
-                    <img
+                  {item.kind === 'video' ? (
+                    // biome-ignore lint/a11y/useMediaCaption: Playwright recordings have no caption track
+                    <video
                       src={item.href}
-                      alt={item.name}
-                      loading="lazy"
+                      controls
+                      preload="metadata"
                       className="h-40 w-full bg-edge-2 object-contain"
                     />
-                  </a>
+                  ) : (
+                    <button type="button" onClick={() => setOpenAt(i)} className="block w-full">
+                      <img
+                        src={item.href}
+                        alt={item.name}
+                        loading="lazy"
+                        className="h-40 w-full bg-edge-2 object-contain"
+                      />
+                    </button>
+                  )}
                   <div className="px-3 py-2">
                     <div className="flex items-center gap-1.5">
                       <span
@@ -269,6 +288,37 @@ export function GalleryPage() {
                 </div>
               ))}
             </div>
+          )}
+          {openAt !== null && items[openAt]?.kind === 'image' && (
+            <Lightbox
+              src={items[openAt].href}
+              alt={items[openAt].name}
+              onClose={() => setOpenAt(null)}
+              onPrev={
+                items.slice(0, openAt).some((item) => item.kind === 'image')
+                  ? () => {
+                      for (let cursor = openAt - 1; cursor >= 0; cursor--) {
+                        if (items[cursor]?.kind === 'image') {
+                          setOpenAt(cursor);
+                          return;
+                        }
+                      }
+                    }
+                  : undefined
+              }
+              onNext={
+                items.slice(openAt + 1).some((item) => item.kind === 'image')
+                  ? () => {
+                      for (let cursor = openAt + 1; cursor < items.length; cursor++) {
+                        if (items[cursor]?.kind === 'image') {
+                          setOpenAt(cursor);
+                          return;
+                        }
+                      }
+                    }
+                  : undefined
+              }
+            />
           )}
         </>
       )}

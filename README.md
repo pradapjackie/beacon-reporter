@@ -27,7 +27,7 @@ That's it. Everything below is optional.
 | Run-over-run compare | ✗ | ✗ | built-in `/compare` page |
 | Failure categories | ✗ | ✅ (its best feature) | ✅ regex rules + built-ins |
 | 50k tests | sluggish | struggles | 2s generate, virtualized UI, worker-thread search |
-| Works on `file://` | ✅ | ✗ (needs a server) | ✅ (data ships as script chunks) |
+| Opens from disk | ✅ | ✗ (needs a server) | single-file `beacon export` opens directly; the folder report needs `beacon open` in Chromium |
 
 - **Dashboard** with 24 configurable, rearrangeable cards: outcomes, trends, slowest tests & actions, failure categories, incidents (one root cause → many tests), severity/owner rollups, suite health score, retry waste, duration budgets & percentiles, custom metrics, failure heatmap, accessibility rollup, suite treemap, and more.
 - **Tests page**: virtualized list, tree/file/suite/project/tag grouping, split-view preview pane, full-text search including *inside error messages*, deep-linkable filters.

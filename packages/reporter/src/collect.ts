@@ -1,3 +1,4 @@
+import { readFile, stat } from 'node:fs/promises';
 import type {
   AttachmentRef,
   ErrorInfo,
@@ -7,7 +8,7 @@ import type {
   VisualDiff,
 } from '@beacon-report/shared';
 import type { TestError, TestResult, TestStep } from '@playwright/test/reporter';
-import type { AttachmentStore } from './attachments';
+import type { AttachmentStore, RawAttachment } from './attachments';
 
 /**
  * Converters from live Playwright objects to schema v1 records. Everything is
@@ -15,8 +16,25 @@ import type { AttachmentStore } from './attachments';
  * minors and replayed fixtures may predate them — never version-sniff.
  */
 
-export type Scrubber = (text: string) => string;
-const identity: Scrubber = (s) => s;
+export type Scrubber = ((text: string) => string) & { active?: boolean };
+const identity: Scrubber = Object.assign((s: string) => s, { active: false });
+
+const TEXT_ATTACHMENT_BYTES = 8 * 1024 * 1024;
+
+/** Text-like attachments (and Playwright's error-context) can carry the raw error. */
+export function isScrubbableAttachment(attachment: { name: string; contentType: string }): boolean {
+  const type = attachment.contentType.split(';')[0]?.trim().toLowerCase() ?? '';
+  if (type.startsWith('text/')) return true;
+  if (type === 'application/json' || type === 'application/xml') return true;
+  const name = attachment.name.toLowerCase();
+  return (
+    name === 'error-context' ||
+    name.endsWith('.md') ||
+    name.endsWith('.txt') ||
+    name.endsWith('.log') ||
+    name.endsWith('.csv')
+  );
+}
 
 export function toErrorInfo(error: TestError, scrub: Scrubber = identity): ErrorInfo {
   return {
@@ -44,7 +62,11 @@ function toStdio(result: TestResult, scrub: Scrubber): StdioChunk[] {
   return chunks;
 }
 
-function toStepNode(step: TestStep, resultAttachments: TestResult['attachments']): StepNode {
+function toStepNode(
+  step: TestStep,
+  resultAttachments: TestResult['attachments'],
+  scrub: Scrubber,
+): StepNode {
   // Step-level attachments landed in Playwright ~1.50; probe and map to
   // indexes in the owning result's attachments array by identity.
   const stepAttachments = (step as { attachments?: TestResult['attachments'] }).attachments ?? [];
@@ -58,10 +80,28 @@ function toStepNode(step: TestStep, resultAttachments: TestResult['attachments']
     category: step.category,
     startTime: step.startTime.getTime(),
     duration: step.duration,
-    error: step.error ? toErrorInfo(step.error) : undefined,
+    error: step.error ? toErrorInfo(step.error, scrub) : undefined,
     attachments: indexes,
-    steps: (step.steps ?? []).map((child) => toStepNode(child, resultAttachments)),
+    steps: (step.steps ?? []).map((child) => toStepNode(child, resultAttachments, scrub)),
   };
+}
+
+async function scrubAttachment(attachment: RawAttachment, scrub: Scrubber): Promise<RawAttachment> {
+  if (!scrub.active || !isScrubbableAttachment(attachment)) return attachment;
+  let body = attachment.body;
+  if (body === undefined && attachment.path) {
+    try {
+      const info = await stat(attachment.path);
+      if (info.size > TEXT_ATTACHMENT_BYTES) return attachment;
+      body = await readFile(attachment.path);
+    } catch {
+      return attachment;
+    }
+  }
+  if (!body) return attachment;
+  const next = scrub(body.toString('utf8'));
+  if (next === body.toString('utf8')) return attachment;
+  return { name: attachment.name, contentType: attachment.contentType, body: Buffer.from(next) };
 }
 
 /** toHaveScreenshot writes `<name>-expected/-actual/-diff` attachment triples. */
@@ -88,8 +128,13 @@ export async function toResultRecord(
 ): Promise<TestResultRecord> {
   const rawAttachments = result.attachments ?? [];
   const attachments = await Promise.all(
-    rawAttachments.map((a) =>
-      store.put({ name: a.name, contentType: a.contentType, path: a.path, body: a.body }),
+    rawAttachments.map(async (a) =>
+      store.put(
+        await scrubAttachment(
+          { name: a.name, contentType: a.contentType, path: a.path, body: a.body },
+          scrub,
+        ),
+      ),
     ),
   );
   return {
@@ -102,7 +147,7 @@ export async function toResultRecord(
     errors: (result.errors ?? []).map((e) => toErrorInfo(e, scrub)),
     stdio: toStdio(result, scrub),
     attachments,
-    steps: (result.steps ?? []).map((step) => toStepNode(step, rawAttachments)),
+    steps: (result.steps ?? []).map((step) => toStepNode(step, rawAttachments, scrub)),
     visualDiffs: detectVisualDiffs(attachments),
     annotations: (result as { annotations?: Array<{ type: string; description?: string }> })
       .annotations,

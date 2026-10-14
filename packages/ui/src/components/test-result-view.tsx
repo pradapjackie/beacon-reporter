@@ -99,7 +99,7 @@ export function ResultView({
               // biome-ignore lint/suspicious/noArrayIndexKey: errors have no stable identity
               <div key={i} className="mt-2.5">
                 <div className="font-mono text-xs text-failed-text">
-                  <AnsiText text={firstLine(error.message)} />
+                  <AnsiText text={firstLine(error.message)} surface="light" />
                 </div>
                 {(error.snippet || error.stack) && (
                   <pre
@@ -164,8 +164,9 @@ export function ResultView({
         )}
 
         <div className="text-xs text-ink-4">
-          worker {result.workerIndex} · started {new Date(result.startTime).toLocaleTimeString()} ·{' '}
-          {formatDuration(result.duration)} · timeout {formatDuration(detail.timeout)}
+          worker {result.parallelIndex >= 0 ? result.parallelIndex : result.workerIndex} · started{' '}
+          {new Date(result.startTime).toLocaleTimeString()} · {formatDuration(result.duration)} ·
+          timeout {formatDuration(detail.timeout)}
         </div>
       </div>
     </div>
@@ -306,10 +307,12 @@ export function StepRow({ step, depth }: { step: StepNode; depth: number }) {
       </button>
       {step.error && (
         <div
+          // biome-ignore lint/a11y/noNoninteractiveTabindex: axe requires scrollable regions be keyboard-reachable
+          tabIndex={0}
           className="mx-2 my-1 overflow-x-auto rounded-[7px] bg-failed-tint px-2.5 py-2 font-mono text-[11px] text-failed-text"
           style={{ marginLeft: `${depth * 1.25 + 1.75}rem` }}
         >
-          <AnsiText text={firstLine(step.error.message)} />
+          <AnsiText text={firstLine(step.error.message)} surface="light" />
         </div>
       )}
       {open &&

@@ -20,6 +20,10 @@ export interface TestsSearch {
   tag?: string;
   /** caseId previewed in the right-hand pane. */
   selected?: string;
+  /** tree | file | suite | project | tag */
+  group?: string;
+  /** duration | name | status */
+  sort?: string;
 }
 
 const rootRoute = createRootRoute({ component: Layout });
@@ -43,6 +47,8 @@ const testsRoute = createRoute({
     if (typeof search.project === 'string' && search.project) out.project = search.project;
     if (typeof search.tag === 'string' && search.tag) out.tag = search.tag;
     if (typeof search.selected === 'string' && search.selected) out.selected = search.selected;
+    if (typeof search.group === 'string' && search.group) out.group = search.group;
+    if (typeof search.sort === 'string' && search.sort) out.sort = search.sort;
     return out;
   },
 });

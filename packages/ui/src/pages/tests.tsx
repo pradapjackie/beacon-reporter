@@ -32,6 +32,12 @@ const GROUP_KEYS: Record<Exclude<GroupBy, 'tree'>, (row: TestRow) => string> = {
   tag: (r) => (r.tags.length > 0 ? r.tags.join(' ') : 'untagged'),
 };
 
+const GROUPS = ['tree', 'file', 'suite', 'project', 'tag'] as const;
+
+function isGroup(value: string | undefined): value is GroupBy {
+  return GROUPS.includes(value as GroupBy);
+}
+
 export function TestsPage() {
   const manifest = useManifest();
   const rows = useRows(manifest.data);
@@ -39,7 +45,7 @@ export function TestsPage() {
   const navigate = useNavigate({ from: '/tests' });
   const scrollRef = useRef<HTMLDivElement>(null);
   const selected = search.selected;
-  const [groupBy, setGroupBy] = useState<GroupBy>('file');
+  const groupBy: GroupBy = isGroup(search.group) ? search.group : 'file';
   const [searchErrors, setSearchErrors] = useState(false);
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const closePreview = () =>
@@ -144,10 +150,43 @@ export function TestsPage() {
         );
       });
 
+    const rank: Record<TestOutcome, number> = { unexpected: 0, flaky: 1, skipped: 2, expected: 3 };
+    const bySort = (a: TestRow, b: TestRow) => {
+      if (search.sort === 'duration') return b.duration - a.duration;
+      if (search.sort === 'name') return a.title.localeCompare(b.title);
+      if (search.sort === 'status') return rank[a.outcome] - rank[b.outcome];
+      return 0;
+    };
+
+    if (search.sort) {
+      const result: DisplayItem[] = [];
+      for (const row of [...rowsFiltered].sort(bySort)) result.push({ kind: 'row', row });
+      return result;
+    }
+
+    if (groupBy === 'tag') {
+      const buckets = new Map<string, TestRow[]>();
+      for (const row of rowsFiltered) {
+        const tags = row.tags.length > 0 ? row.tags : ['untagged'];
+        for (const tag of tags) {
+          const list = buckets.get(tag) ?? [];
+          list.push(row);
+          buckets.set(tag, list);
+        }
+      }
+      const result: DisplayItem[] = [];
+      for (const tag of [...buckets.keys()].sort((a, b) => a.localeCompare(b))) {
+        const tagged = [...(buckets.get(tag) ?? [])].sort(bySort);
+        result.push({ kind: 'header', file: tag, count: tagged.length });
+        for (const row of tagged) result.push({ kind: 'row', row });
+      }
+      return result;
+    }
+
     // Tree mode: collapsible file → describe/Feature hierarchy.
     if (groupBy === 'tree') {
       const sorted = [...rowsFiltered].sort(
-        (a, b) => a.file.localeCompare(b.file) || a.suite.localeCompare(b.suite),
+        (a, b) => a.file.localeCompare(b.file) || a.suite.localeCompare(b.suite) || bySort(a, b),
       );
       const result: DisplayItem[] = [];
       let fileHeader: DisplayItem | undefined;
@@ -192,7 +231,6 @@ export function TestsPage() {
     }
 
     const keyOf = GROUP_KEYS[groupBy];
-    // Non-file groupings need a stable sort by group key first.
     const sorted =
       groupBy === 'file'
         ? rowsFiltered
@@ -212,7 +250,16 @@ export function TestsPage() {
       result.push({ kind: 'row', row });
     }
     return result;
-  }, [all, filteredIndexes, groupBy, search.q, searchErrors, errorIndex.data, collapsed]);
+  }, [
+    all,
+    filteredIndexes,
+    groupBy,
+    search.q,
+    search.sort,
+    searchErrors,
+    errorIndex.data,
+    collapsed,
+  ]);
 
   const shown = items.filter((i) => i.kind === 'row').length;
   const itemsRef = useRef<string[]>([]);
@@ -331,11 +378,15 @@ export function TestsPage() {
         })}
         <span className="ml-auto flex items-center gap-2.5">
           <span className="flex gap-0.5 rounded-lg border border-edge p-0.5">
-            {(['tree', 'file', 'suite', 'project', 'tag'] as const).map((g) => (
+            {GROUPS.map((g) => (
               <button
                 key={g}
                 type="button"
-                onClick={() => setGroupBy(g)}
+                onClick={() =>
+                  navigate({
+                    search: (prev) => ({ ...prev, group: g === 'file' ? undefined : g }),
+                  })
+                }
                 className={`rounded-md px-2 py-1 text-[11px] capitalize ${
                   groupBy === g ? 'bg-brand-soft font-semibold text-brand-text' : 'text-ink-3'
                 }`}
@@ -344,6 +395,23 @@ export function TestsPage() {
               </button>
             ))}
           </span>
+          <label className="relative block">
+            <span className="sr-only">Sort tests</span>
+            <select
+              value={search.sort ?? ''}
+              onChange={(e) =>
+                navigate({
+                  search: (prev) => ({ ...prev, sort: e.target.value || undefined }),
+                })
+              }
+              className="h-8 appearance-none rounded-lg border border-edge bg-card pl-2.5 pr-7 text-[11px] text-ink-2 outline-none focus:border-brand"
+            >
+              <option value="">Sort</option>
+              <option value="duration">Duration</option>
+              <option value="name">Name</option>
+              <option value="status">Status</option>
+            </select>
+          </label>
           <span className="text-[13px] text-ink-3">
             <span className="font-semibold text-ink">{shown}</span> of {all.length} tests
           </span>

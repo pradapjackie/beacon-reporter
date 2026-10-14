@@ -38,6 +38,7 @@ import {
 import { type CategoryRule, categorize } from './categories';
 import { readCoverageSummary } from './coverage';
 import { updateHistory } from './history';
+import { jsonForScript } from './script-json';
 
 // Injected by tsup at build time; the fallback covers running from source (tests).
 declare const __BEACON_VERSION__: string | undefined;
@@ -67,6 +68,8 @@ export interface WriteReportInput {
   environment?: Record<string, string>;
   links?: Record<string, string>;
   categories?: CategoryRule[];
+  /** Unscrubbed error text per case, so category rules see the original message. */
+  categoryText?: Map<string, string>;
   history?: { dir: string; retain: number };
   editorLinks?: boolean;
   /** White-labeling: logo (absolute path, ≤64KB image) + accent hex color. */
@@ -116,7 +119,7 @@ export async function writeReport(input: WriteReportInput): Promise<void> {
 
   const ordered = detailsChunks.flat();
   // Mutates failing details with a `category` before chunks serialize.
-  categorize(ordered, input.categories);
+  categorize(ordered, input.categories, input.categoryText);
   // Shard provenance: only a single-shard run knows which shard it is —
   // merged blob reports carry no per-test shard in the Reporter API.
   if (input.config.shard) {
@@ -237,17 +240,25 @@ export async function writeReport(input: WriteReportInput): Promise<void> {
   const TIMELINE_CAP = 5000;
   let timeline = ordered.flatMap((detail) =>
     detail.results
-      .filter((r) => r.workerIndex >= 0 && r.duration > 0)
-      .map((r) => ({
-        caseId: detail.caseId,
-        title: detail.title,
-        projectName: detail.projectName,
-        workerIndex: r.workerIndex,
-        start: r.startTime,
-        duration: r.duration,
-        outcome: Math.max(0, TEST_OUTCOMES.indexOf(detail.outcome)),
-        retry: r.retry,
-      })),
+      .filter((r) => r.duration > 0)
+      .flatMap((r) => {
+        // workerIndex climbs every time Playwright restarts a worker process.
+        // parallelIndex is the pool slot and stays stable for the run.
+        const lane = r.parallelIndex >= 0 ? r.parallelIndex : r.workerIndex;
+        if (lane < 0) return [];
+        return [
+          {
+            caseId: detail.caseId,
+            title: detail.title,
+            projectName: detail.projectName,
+            workerIndex: lane,
+            start: r.startTime,
+            duration: r.duration,
+            outcome: Math.max(0, TEST_OUTCOMES.indexOf(detail.outcome)),
+            retry: r.retry,
+          },
+        ];
+      }),
   );
   const minStart = timeline.reduce((min, e) => Math.min(min, e.start), Number.POSITIVE_INFINITY);
   timeline = timeline
@@ -769,7 +780,7 @@ function badgeSvg(passRate: number): string {
 }
 
 function toChunk(key: string, data: unknown): string {
-  return `window.__BEACON__.push(${JSON.stringify(key)}, ${JSON.stringify(data)});\n`;
+  return `window.__BEACON__.push(${jsonForScript(key)}, ${jsonForScript(data)});\n`;
 }
 
 function detectPlaywrightVersion(config: FullConfig): string | undefined {

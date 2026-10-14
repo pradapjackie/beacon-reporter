@@ -62,4 +62,14 @@ describe('categorize', () => {
     expect(details[0]?.category).toBe('Payment');
     expect(details[1]?.category).toBeUndefined();
   });
+
+  it('matches category rules against the unscrubbed error text', () => {
+    const detail = failing('[SECRET]');
+    categorize(
+      [detail],
+      [{ name: 'Leaked secret', messageRegex: 'secret-' }],
+      new Map([[detail.caseId, 'expect(token=secret-abc123xyz)']]),
+    );
+    expect(detail.category).toBe('Leaked secret');
+  });
 });

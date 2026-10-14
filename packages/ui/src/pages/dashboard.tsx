@@ -12,7 +12,7 @@ import { IconCross, IconGrip, IconSliders } from '../components/icons';
 import { MasonryCell } from '../components/masonry';
 import { FileTreemap } from '../components/treemap';
 import { applyOrder, useDashboardLayout } from '../lib/dashboard-layout';
-import { formatDuration } from '../lib/format';
+import { formatDateTime, formatDuration } from '../lib/format';
 import { useHistory, useManifest } from '../lib/hooks';
 
 const TILES: Array<{ key: keyof RunCounts & TestOutcome; label: string; tone: string }> = [
@@ -122,6 +122,21 @@ function StackedBar({ rollup }: { rollup: GroupRollup }) {
   );
 }
 
+function moveCard(
+  order: string[],
+  card: string,
+  delta: number,
+  setOrder: (order: string[]) => void,
+) {
+  const next = [...order];
+  const from = next.indexOf(card);
+  const to = from + delta;
+  if (from < 0 || to < 0 || to >= next.length) return;
+  const [moved] = next.splice(from, 1);
+  if (moved) next.splice(to, 0, moved);
+  setOrder(next);
+}
+
 function passRateOf(rollup: GroupRollup): string {
   return rollup.total === 0
     ? '—'
@@ -132,10 +147,12 @@ function GroupRows({
   rollups,
   linkFor,
   mono = false,
+  metricOf = passRateOf,
 }: {
   rollups: GroupRollup[];
   linkFor: (name: string) => { to: string; search: Record<string, string> };
   mono?: boolean;
+  metricOf?: (rollup: GroupRollup) => string;
 }) {
   if (rollups.length === 0)
     return <div className="mt-3 text-[13px] text-ink-3">Nothing recorded.</div>;
@@ -159,7 +176,7 @@ function GroupRows({
                   {formatDuration(rollup.duration)}
                 </span>
               )}
-              <span className="ml-auto shrink-0 font-mono text-xs">{passRateOf(rollup)}</span>
+              <span className="ml-auto shrink-0 font-mono text-xs">{metricOf(rollup)}</span>
             </div>
             <StackedBar rollup={rollup} />
           </div>
@@ -326,10 +343,10 @@ function TrendCard({ history }: { history: HistoryData | null | undefined }) {
             {Math.round(last)}%
           </text>
           <text x="8" y={H + 12} fontSize="10" fill="var(--ink-3)">
-            {new Date(runs[0]?.startTime ?? 0).toLocaleDateString()}
+            {formatDateTime(runs[0]?.startTime ?? 0)}
           </text>
           <text x={W - 8} y={H + 12} textAnchor="end" fontSize="10" fill="var(--ink-3)">
-            {new Date(runs[runs.length - 1]?.startTime ?? 0).toLocaleDateString()}
+            {formatDateTime(runs[runs.length - 1]?.startTime ?? 0)}
           </text>
         </svg>
       </div>
@@ -356,7 +373,7 @@ function SlowestCard({ manifest }: { manifest: Manifest }) {
     <Card>
       <div className="flex items-baseline">
         <div className="text-sm font-semibold">Slowest tests</div>
-        <Link to="/tests" className="ml-auto text-xs text-brand-text">
+        <Link to="/tests" search={{ sort: 'duration' }} className="ml-auto text-xs text-brand-text">
           View all
         </Link>
       </div>
@@ -672,13 +689,18 @@ function A11yCard({ manifest }: { manifest: Manifest }) {
 }
 
 function CategoriesCard({ manifest }: { manifest: Manifest }) {
+  const rollups = (manifest.aggregates.categories ?? []).slice(0, 8);
+  const failing = rollups.reduce((sum, rollup) => sum + rollup.total, 0);
   return (
     <Card>
       <div className="text-sm font-semibold">Failure categories</div>
-      <div className="text-xs text-ink-3">failing tests grouped by cause</div>
+      <div className="text-xs text-ink-3">share of failing tests</div>
       <GroupRows
-        rollups={(manifest.aggregates.categories ?? []).slice(0, 8)}
+        rollups={rollups}
         linkFor={() => ({ to: '/tests', search: { outcome: 'unexpected,flaky' } })}
+        metricOf={(rollup) =>
+          failing === 0 ? '—' : `${Math.round((rollup.total / failing) * 100)}%`
+        }
       />
       {(manifest.aggregates.categories ?? []).length === 0 && null}
     </Card>
@@ -1080,7 +1102,11 @@ function HeatmapCard({ history }: { history: HistoryData | null | undefined }) {
       {runs.length < 2 ? (
         <div className="mt-3 text-[13px] text-ink-3">Appears with run history.</div>
       ) : (
-        <div className="mt-3 overflow-x-auto">
+        <div
+          // biome-ignore lint/a11y/noNoninteractiveTabindex: axe requires scrollable regions be keyboard-reachable
+          tabIndex={0}
+          className="mt-3 overflow-x-auto"
+        >
           <div className="grid w-max grid-cols-[28px_repeat(24,14px)] gap-[2px] text-[9px] text-ink-4">
             <span />
             {Array.from({ length: 24 }, (_, h) => (
@@ -1342,19 +1368,21 @@ export function Dashboard() {
       <h1 className="sr-only">Dashboard</h1>
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         {TILES.map((tile) => (
-          <Card key={tile.key} className="px-[18px] py-4">
-            <div className="text-xs font-semibold uppercase tracking-wider text-ink-3">
-              {tile.label}
-            </div>
-            <div className={`mt-1 font-display text-[34px] font-bold leading-none ${tile.tone}`}>
-              {manifest.counts[tile.key]}
-            </div>
-            <TileDelta
-              tile={tile.key}
-              current={manifest.counts[tile.key]}
-              previous={previousCounts?.[tile.key]}
-            />
-          </Card>
+          <Link key={tile.key} to="/tests" search={{ outcome: tile.key }} className="block">
+            <Card className="px-[18px] py-4 transition-colors hover:border-brand">
+              <div className="text-xs font-semibold uppercase tracking-wider text-ink-3">
+                {tile.label}
+              </div>
+              <div className={`mt-1 font-display text-[34px] font-bold leading-none ${tile.tone}`}>
+                {manifest.counts[tile.key]}
+              </div>
+              <TileDelta
+                tile={tile.key}
+                current={manifest.counts[tile.key]}
+                previous={previousCounts?.[tile.key]}
+              />
+            </Card>
+          </Link>
         ))}
       </div>
 
@@ -1435,9 +1463,25 @@ export function Dashboard() {
                 {CARD_LABEL[card] ?? card}
                 <button
                   type="button"
+                  onClick={() => moveCard(visible, card, -1, layout.setOrder)}
+                  aria-label={`Move ${CARD_LABEL[card] ?? card} earlier`}
+                  className="ml-auto rounded px-1 hover:bg-brand/20"
+                >
+                  ↑
+                </button>
+                <button
+                  type="button"
+                  onClick={() => moveCard(visible, card, 1, layout.setOrder)}
+                  aria-label={`Move ${CARD_LABEL[card] ?? card} later`}
+                  className="rounded px-1 hover:bg-brand/20"
+                >
+                  ↓
+                </button>
+                <button
+                  type="button"
                   onClick={() => layout.toggleHidden(card)}
                   aria-label={`Hide ${CARD_LABEL[card] ?? card}`}
-                  className="ml-auto rounded p-0.5 hover:bg-brand/20"
+                  className="rounded p-0.5 hover:bg-brand/20"
                 >
                   <IconCross size={11} />
                 </button>

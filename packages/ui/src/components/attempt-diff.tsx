@@ -59,13 +59,17 @@ export function AttemptDiff({ results }: { results: TestResultRecord[] }) {
               </span>
               <span className="font-mono text-[11px] text-ink-3">
                 attempt {result.retry + 1} · {formatDuration(result.duration)} · worker{' '}
-                {result.workerIndex}
+                {result.parallelIndex >= 0 ? result.parallelIndex : result.workerIndex}
               </span>
             </div>
             {lines.length === 0 ? (
               <div className="mt-3 text-[13px] text-passed-text">No errors.</div>
             ) : (
-              <pre className="mt-3 overflow-x-auto font-mono text-[12px] leading-[1.6] text-ink-2">
+              <pre
+                // biome-ignore lint/a11y/noNoninteractiveTabindex: axe requires scrollable regions be keyboard-reachable
+                tabIndex={0}
+                className="mt-3 overflow-x-auto font-mono text-[12px] leading-[1.6] text-ink-2"
+              >
                 {lines.map((line, i) => (
                   <div
                     // biome-ignore lint/suspicious/noArrayIndexKey: static error lines

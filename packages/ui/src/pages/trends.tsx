@@ -49,7 +49,11 @@ export function TrendsPage() {
         <PassRateChart runs={runs} passRates={passRates} />
       </div>
 
-      <div className="overflow-x-auto rounded-[14px] border border-edge bg-card">
+      <div
+        // biome-ignore lint/a11y/noNoninteractiveTabindex: axe requires scrollable regions be keyboard-reachable
+        tabIndex={0}
+        className="overflow-x-auto rounded-[14px] border border-edge bg-card"
+      >
         <table className="w-full text-[13px]">
           <thead>
             <tr className="border-b border-edge-2 text-left text-[11px] uppercase tracking-wide text-ink-3">
@@ -186,7 +190,11 @@ function RunCalendar({
   };
 
   return (
-    <div className="mt-3 overflow-x-auto">
+    <div
+      // biome-ignore lint/a11y/noNoninteractiveTabindex: axe requires scrollable regions be keyboard-reachable
+      tabIndex={0}
+      className="mt-3 overflow-x-auto"
+    >
       <div className="flex gap-2">
         <div className="grid grid-rows-7 gap-[3px] pr-1 text-right text-[9px] text-ink-4">
           {DAY_LABELS.map((label, i) => (

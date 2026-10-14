@@ -28,30 +28,34 @@ export function Layout() {
     if (title) document.title = `${title} — Beacon`;
   }, [title]);
 
-  // Watch mode: while the reporter marks the run in progress, poll for the
-  // next interim write — drop chunk caches, refetch everything. Works on any
-  // static host (and file://) because chunks load via script tags.
+  // Watch mode polls quickly while a run is in progress. A slower poll keeps
+  // running afterwards so a report opened before the first interim write
+  // still notices the new run. Single-file exports are baked in.
   const queryClient = useQueryClient();
   const inProgress = meta?.inProgress === true;
   useEffect(() => {
-    if (!inProgress) return;
-    const timer = setInterval(() => {
-      resetData();
-      void queryClient.invalidateQueries();
-    }, 2500);
+    if (window.__BEACON_SINGLE_FILE__) return;
+    const timer = setInterval(
+      () => {
+        resetData();
+        void queryClient.invalidateQueries();
+      },
+      inProgress ? 2500 : 8000,
+    );
     return () => clearInterval(timer);
   }, [inProgress, queryClient]);
 
   // White-labeling: an accentColor retints the brand tokens for both themes.
+  // Link text uses a darkened (or lightened) shade so it stays above 4.5:1.
   useEffect(() => {
     const accent = branding?.accentColor;
     if (!accent) return;
     const root = document.documentElement.style;
     root.setProperty('--brand', accent);
-    root.setProperty('--brand-text', accent);
+    root.setProperty('--brand-text', readableAccent(accent, dark));
     root.setProperty('--brand-soft', `color-mix(in srgb, ${accent} 12%, transparent)`);
     root.setProperty('--brand-ring', `color-mix(in srgb, ${accent} 18%, transparent)`);
-  }, [branding?.accentColor]);
+  }, [branding?.accentColor, dark]);
 
   // Keyboard shortcuts: d dashboard · t tests · w timeline · l theme · / search · ? help.
   const [helpOpen, setHelpOpen] = useState(false);
@@ -81,7 +85,7 @@ export function Layout() {
   return (
     <div className="min-h-screen">
       <header className="sticky top-0 z-10 border-b border-edge bg-card/85 backdrop-blur">
-        <div className="flex h-[60px] items-center gap-7 px-7">
+        <div className="flex min-h-[60px] flex-wrap items-center gap-x-7 gap-y-2 px-4 py-2 sm:px-7">
           <Link to="/" className="flex items-center gap-2.5 text-ink">
             {branding?.logo ? (
               <img src={branding.logo} alt="" className="h-6 w-auto max-w-32" />
@@ -98,7 +102,7 @@ export function Layout() {
               {title}
             </span>
           )}
-          <nav className="flex gap-1.5 text-sm">
+          <nav className="flex flex-wrap gap-1.5 text-sm">
             <Link
               to="/"
               className="rounded-lg px-3.5 py-[7px] text-ink-2"
@@ -190,6 +194,13 @@ export function Layout() {
             )}
             <button
               type="button"
+              onClick={() => setHelpOpen(true)}
+              className="hidden text-[13px] text-ink-3 hover:text-brand-text sm:inline"
+            >
+              Shortcuts
+            </button>
+            <button
+              type="button"
               onClick={toggle}
               aria-label={dark ? 'Switch to light theme' : 'Switch to dark theme'}
               className="grid h-[34px] w-[34px] place-items-center rounded-[9px] border border-edge bg-card text-ink-2"
@@ -245,6 +256,42 @@ export function Layout() {
       {helpOpen && <ShortcutHelp onClose={() => setHelpOpen(false)} />}
     </div>
   );
+}
+
+function readableAccent(hex: string, dark: boolean): string {
+  const parsed = /^#?([0-9a-f]{6})$/i.exec(hex.trim());
+  if (!parsed?.[1]) return dark ? '#e8edf4' : '#312e81';
+  const raw = parsed[1];
+  let rgb: [number, number, number] = [
+    Number.parseInt(raw.slice(0, 2), 16),
+    Number.parseInt(raw.slice(2, 4), 16),
+    Number.parseInt(raw.slice(4, 6), 16),
+  ];
+  const background: [number, number, number] = dark ? [21, 29, 43] : [255, 255, 255];
+  const toward: [number, number, number] = dark ? [232, 237, 244] : [30, 27, 75];
+  for (let step = 0; step < 12 && contrastRatio(rgb, background) < 4.5; step++) {
+    rgb = [
+      Math.round(rgb[0] * 0.78 + toward[0] * 0.22),
+      Math.round(rgb[1] * 0.78 + toward[1] * 0.22),
+      Math.round(rgb[2] * 0.78 + toward[2] * 0.22),
+    ];
+  }
+  return `#${rgb.map((channel) => channel.toString(16).padStart(2, '0')).join('')}`;
+}
+
+function contrastRatio(a: [number, number, number], b: [number, number, number]): number {
+  const l1 = relativeLuminance(a);
+  const l2 = relativeLuminance(b);
+  const [hi, lo] = l1 > l2 ? [l1, l2] : [l2, l1];
+  return (hi + 0.05) / (lo + 0.05);
+}
+
+function relativeLuminance([r, g, b]: [number, number, number]): number {
+  const channel = (value: number) => {
+    const s = value / 255;
+    return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+  };
+  return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
 }
 
 const SHORTCUTS: Array<[string, string]> = [

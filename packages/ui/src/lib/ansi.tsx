@@ -24,6 +24,26 @@ const FG: Record<number, string> = {
   97: '#f8fafc',
 };
 
+/** Darker tokens so ANSI reds clear WCAG AA on white and on the failed tint. */
+const FG_LIGHT: Record<number, string> = {
+  30: '#3f4c5f',
+  31: '#9f1239',
+  32: '#166534',
+  33: '#92400e',
+  34: '#1e40af',
+  35: '#6b21a8',
+  36: '#155e75',
+  37: '#1f2937',
+  90: '#3f4c5f',
+  91: '#9f1239',
+  92: '#166534',
+  93: '#92400e',
+  94: '#1e40af',
+  95: '#6b21a8',
+  96: '#155e75',
+  97: '#111827',
+};
+
 interface Style {
   color?: string;
   bold?: boolean;
@@ -37,7 +57,8 @@ export function stripAnsi(text: string): string {
   return text.replace(SGR, '');
 }
 
-export function ansiToNodes(text: string): ReactNode[] {
+export function ansiToNodes(text: string, surface: 'code' | 'light' = 'code'): ReactNode[] {
+  const palette = surface === 'light' ? FG_LIGHT : FG;
   const nodes: ReactNode[] = [];
   let style: Style = {};
   let last = 0;
@@ -73,13 +94,13 @@ export function ansiToNodes(text: string): ReactNode[] {
       else if (code === 2) style = { ...style, dim: true };
       else if (code === 22) style = { ...style, bold: false, dim: false };
       else if (code === 39) style = { ...style, color: undefined };
-      else if (FG[code]) style = { ...style, color: FG[code] };
+      else if (palette[code]) style = { ...style, color: palette[code] };
     }
   }
   push(text.slice(last));
   return nodes;
 }
 
-export function AnsiText({ text }: { text: string }) {
-  return <>{ansiToNodes(text)}</>;
+export function AnsiText({ text, surface = 'code' }: { text: string; surface?: 'code' | 'light' }) {
+  return <>{ansiToNodes(text, surface)}</>;
 }

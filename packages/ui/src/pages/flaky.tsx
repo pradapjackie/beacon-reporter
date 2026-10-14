@@ -11,9 +11,11 @@ export function FlakyPage() {
   const manifest = useManifest();
   const entries = manifest.data?.manifest.aggregates.flakiness ?? [];
   const quarantine = entries.filter((e) => e.score >= 40);
-  const grepInvert = quarantine
-    .map((e) => e.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
-    .join('|');
+  const titles = [
+    ...new Set(quarantine.map((e) => e.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))),
+  ];
+  const grepInvert =
+    titles.length === 0 ? '' : titles.length === 1 ? `^${titles[0]}$` : `^(?:${titles.join('|')})$`;
 
   if (manifest.isPending) {
     return <div className="py-16 text-center text-sm text-ink-3">Loading…</div>;
@@ -42,13 +44,17 @@ export function FlakyPage() {
           <span className="ml-auto">
             <CopyChip
               label={`Copy quarantine flag (${quarantine.length})`}
-              value={`npx playwright test --grep-invert "(${grepInvert})"`}
+              value={`npx playwright test --grep-invert "${grepInvert}"`}
             />
           </span>
         )}
       </div>
 
-      <div className="overflow-x-auto rounded-[14px] border border-edge bg-card">
+      <div
+        // biome-ignore lint/a11y/noNoninteractiveTabindex: axe requires scrollable regions be keyboard-reachable
+        tabIndex={0}
+        className="overflow-x-auto rounded-[14px] border border-edge bg-card"
+      >
         <table className="w-full text-[13px]">
           <thead>
             <tr className="border-b border-edge-2 text-left text-[11px] uppercase tracking-wide text-ink-3">

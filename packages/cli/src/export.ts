@@ -1,5 +1,6 @@
 import { readFile, readdir, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { jsonForScript } from './script-json';
 
 /**
  * Single-file export (ROADMAP.md: opt-in, never the primary format): inlines
@@ -33,7 +34,7 @@ function parseChunk(source: string): unknown {
 }
 
 function toInline(key: string, data: unknown): string {
-  return `<script>window.__BEACON__.push(${JSON.stringify(key)}, ${JSON.stringify(data)});</script>`;
+  return `<script>window.__BEACON__.push(${jsonForScript(key)}, ${jsonForScript(data)});</script>`;
 }
 
 async function listChunks(dir: string): Promise<string[]> {
@@ -191,7 +192,7 @@ try {
 window.__BEACON_SINGLE_FILE__ = true;
 ${options.failuresOnly ? "window.__BEACON_VARIANT__ = 'failures';\n" : ''}window.__BEACON_PRELOADED__ = {};
 window.__BEACON__ = { push: function (k, d) { window.__BEACON_PRELOADED__[k] = d; } };
-window.__BEACON_INLINE_ATTACHMENTS__ = ${JSON.stringify(inline)};
+window.__BEACON_INLINE_ATTACHMENTS__ = ${jsonForScript(inline)};
 </script>
 ${dataScripts.join('\n')}
 <style>

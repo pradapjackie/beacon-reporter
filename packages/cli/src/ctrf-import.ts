@@ -40,6 +40,7 @@ interface CtrfReport {
 export async function generateFromCtrf(
   fromFile: string,
   outDir: string,
+  historyDir?: string,
 ): Promise<{ tests: number; tool: string }> {
   const parsed = JSON.parse(await readFile(fromFile, 'utf8')) as CtrfReport;
   const tests = parsed.results?.tests;
@@ -74,6 +75,8 @@ export async function generateFromCtrf(
     title: `${tool} results`,
     // Imported results have no source tree to read from.
     embedSource: false,
+    // A CTRF import is not a local Playwright run — don't append to the project's history.
+    history: historyDir ? { dir: path.resolve(historyDir) } : false,
   });
   await replayFixture(reporter, fixture, process.cwd());
   return { tests: tests.length, tool };

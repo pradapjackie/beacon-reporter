@@ -1,5 +1,5 @@
 import type { AttachmentRef } from '@beacon-report/shared';
-import { useEffect, useState } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 import { attachmentHref } from '../lib/attachments';
 import { IconDownload, IconExternal, IconTrace } from './icons';
 import { AxeCard, HarCard, isAxe, isHar } from './json-attachments';
@@ -206,6 +206,7 @@ function ImageCard({ attachment, href }: { attachment: AttachmentRef; href: stri
 
 const TEXTUAL = ['application/json', 'text/plain', 'text/csv', 'text/markdown'];
 const PREVIEW_MAX = 512 * 1024;
+const PREVIEW_LINES = 200;
 
 function isTextual(attachment: AttachmentRef): boolean {
   return (
@@ -218,6 +219,7 @@ function isTextual(attachment: AttachmentRef): boolean {
 function TextAttachment({ attachment, href }: { attachment: AttachmentRef; href: string }) {
   const [body, setBody] = useState<string | null>(null);
   const [state, setState] = useState<'closed' | 'open' | 'failed'>('closed');
+  const [expanded, setExpanded] = useState(false);
   const kind = attachment.contentType.split(';')[0];
 
   const toggle = async () => {
@@ -275,13 +277,138 @@ function TextAttachment({ attachment, href }: { attachment: AttachmentRef; href:
         </span>
       </button>
       {state === 'open' && body !== null && kind === 'text/csv' && <CsvTable body={body} />}
-      {state === 'open' && body !== null && kind !== 'text/csv' && (
-        <pre className="mt-2 max-h-72 overflow-auto rounded-[10px] bg-code-bg p-3 font-mono text-xs leading-[1.6] text-code-ink">
-          {body}
-        </pre>
+      {state === 'open' && body !== null && kind === 'text/markdown' && (
+        <MarkdownPreview body={body} expanded={expanded} onExpand={() => setExpanded(true)} />
+      )}
+      {state === 'open' && body !== null && kind !== 'text/csv' && kind !== 'text/markdown' && (
+        <PlainPreview body={body} expanded={expanded} onExpand={() => setExpanded(true)} />
       )}
     </div>
   );
+}
+
+function clipped(body: string, expanded: boolean): { text: string; hidden: number } {
+  const lines = body.split('\n');
+  if (expanded || lines.length <= PREVIEW_LINES) return { text: body, hidden: 0 };
+  return { text: lines.slice(0, PREVIEW_LINES).join('\n'), hidden: lines.length - PREVIEW_LINES };
+}
+
+function PlainPreview({
+  body,
+  expanded,
+  onExpand,
+}: {
+  body: string;
+  expanded: boolean;
+  onExpand: () => void;
+}) {
+  const view = clipped(body, expanded);
+  return (
+    <div className="mt-2">
+      <pre className="max-h-72 overflow-auto rounded-[10px] bg-code-bg p-3 font-mono text-xs leading-[1.6] text-code-ink">
+        {view.text}
+      </pre>
+      {view.hidden > 0 && (
+        <button type="button" onClick={onExpand} className="mt-2 text-xs text-brand-text">
+          Show {view.hidden} more lines
+        </button>
+      )}
+    </div>
+  );
+}
+
+function MarkdownPreview({
+  body,
+  expanded,
+  onExpand,
+}: {
+  body: string;
+  expanded: boolean;
+  onExpand: () => void;
+}) {
+  const view = clipped(body, expanded);
+  return (
+    <div className="mt-2 rounded-[10px] border border-edge bg-card-2 p-3 text-[13px] leading-6 text-ink-2">
+      <MarkdownText text={view.text} />
+      {view.hidden > 0 && (
+        <button type="button" onClick={onExpand} className="mt-2 text-xs text-brand-text">
+          Show {view.hidden} more lines
+        </button>
+      )}
+    </div>
+  );
+}
+
+/** Small markdown subset rendered as React nodes, so attachment HTML never executes. */
+function MarkdownText({ text }: { text: string }) {
+  const blocks = text.split(/\n{2,}/);
+  return (
+    <div className="flex flex-col gap-2">
+      {blocks.map((block, index) => {
+        const trimmed = block.trim();
+        if (trimmed.startsWith('```')) {
+          const code = trimmed.replace(/^```[a-z]*\n?/, '').replace(/```$/, '');
+          return (
+            <pre
+              // biome-ignore lint/suspicious/noArrayIndexKey: markdown blocks are positional
+              key={index}
+              className="overflow-auto rounded-md bg-code-bg p-2 font-mono text-xs text-code-ink"
+            >
+              {code}
+            </pre>
+          );
+        }
+        const heading = /^(#{1,3})\s+(.*)$/.exec(trimmed);
+        if (heading) {
+          return (
+            <div
+              // biome-ignore lint/suspicious/noArrayIndexKey: markdown blocks are positional
+              key={index}
+              className="font-semibold text-ink"
+            >
+              {heading[2]}
+            </div>
+          );
+        }
+        return (
+          <p
+            // biome-ignore lint/suspicious/noArrayIndexKey: markdown blocks are positional
+            key={index}
+          >
+            {inlineMarkdown(trimmed)}
+          </p>
+        );
+      })}
+    </div>
+  );
+}
+
+function inlineMarkdown(text: string): ReactNode[] {
+  const nodes: ReactNode[] = [];
+  const pattern = /(`[^`]+`|\*\*[^*]+\*\*)/g;
+  let last = 0;
+  let key = 0;
+  for (const match of text.matchAll(pattern)) {
+    const at = match.index ?? 0;
+    if (at > last) nodes.push(text.slice(last, at));
+    const token = match[0];
+    if (token.startsWith('`')) {
+      nodes.push(
+        <code key={key++} className="rounded bg-edge-2 px-1 font-mono text-[12px]">
+          {token.slice(1, -1)}
+        </code>,
+      );
+    } else {
+      nodes.push(
+        <strong key={key++} className="font-semibold text-ink">
+          {token.slice(2, -2)}
+        </strong>,
+      );
+    }
+    last = at + token.length;
+  }
+  if (last < text.length) nodes.push(text.slice(last));
+  return nodes;
 }
 
 function CsvTable({ body }: { body: string }) {

@@ -111,7 +111,11 @@ export function TimelinePage() {
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-[14px] border border-edge bg-card p-4">
+      <div
+        // biome-ignore lint/a11y/noNoninteractiveTabindex: axe requires scrollable regions be keyboard-reachable
+        tabIndex={0}
+        className="overflow-x-auto rounded-[14px] border border-edge bg-card p-4"
+      >
         <svg
           ref={svgRef}
           width="100%"

@@ -9,10 +9,12 @@ Usage:
   beacon open [reportDir] [--port <n>]        Serve a generated report (gzip + CORS) and print the URL
   beacon generate --from <events.json>        Rebuild a report from a recorded Reporter API event
                   [--out <dir>]               stream without rerunning tests
+                  [--history <dir>]           (history is off unless this is set)
                   --from-ctrf <ctrf.json>     …or import any framework's CTRF results
                                               (Jest/Cypress/WDIO — anything emitting CTRF)
   beacon merge [blobDir] [--out <dir>]        Merge sharded blob reports into one beacon report
-                                              (wraps playwright merge-reports; default dir ./blob-report)
+                  [--config <playwright.config>]
+                  [--history <dir>]           (wraps playwright merge-reports; history off unless set)
   beacon export [reportDir] [--out <file>]    Bundle a report into one self-contained .html
                 [--failures-only]             (images inlined up to 10 MB; videos/traces omitted)
                 [--pdf]                       …or print the dashboard to a PDF (needs Playwright)
@@ -21,10 +23,11 @@ Usage:
               [--min-pass-rate pct]
   beacon summarize [reportDir] [--out <file>] Markdown digest (PR comments, AI agents)
   beacon convert [reportDir] --format junit|ctrf|csv [--out <file>]
-  beacon quarantine [reportDir]               Flaky-quarantine candidates from run history
-              [--history <dir>] [--min-rate 0.5] [--min-runs 3] [--grep-invert] [--fixme]
+  beacon quarantine [reportDir]               Same flaky list as the Flaky page (score ≥ 40)
+              [--min-runs 3] [--grep-invert] [--fixme]
   beacon notify [reportDir] --webhook <url>   Post the summary to a webhook
-                [--format plain|slack|teams]  (slack = Block Kit, teams = MessageCard)
+                [--format plain|slack|teams]  (default plain; slack = Block Kit, teams = MessageCard)
+                [--url <report-url>]          Link appended to Slack and Teams payloads
   beacon diff <reportA> <reportB>             Compare two reports (new/fixed/regressed/slower)
   beacon archive <parentDir> [--out <file>]   Index page over a directory of reports
   beacon history show [dir]                   Print the retained run table (default .beacon-history)
@@ -60,9 +63,11 @@ switch (command) {
     const fromFlag = rest.indexOf('--from');
     const ctrfFlag = rest.indexOf('--from-ctrf');
     const outFlag = rest.indexOf('--out');
+    const historyFlag = rest.indexOf('--history');
     const from = fromFlag >= 0 ? rest[fromFlag + 1] : undefined;
     const fromCtrf = ctrfFlag >= 0 ? rest[ctrfFlag + 1] : undefined;
     const out = (outFlag >= 0 ? rest[outFlag + 1] : undefined) ?? 'beacon-report';
+    const historyDir = historyFlag >= 0 ? rest[historyFlag + 1] : undefined;
     if (!from && !fromCtrf) {
       fail(
         'beacon generate requires --from <events.json> (recorded Reporter API events) or --from-ctrf <ctrf.json>',
@@ -71,11 +76,11 @@ switch (command) {
     try {
       if (fromCtrf) {
         const { generateFromCtrf } = await import('./ctrf-import');
-        const { tests, tool } = await generateFromCtrf(fromCtrf, out);
+        const { tests, tool } = await generateFromCtrf(fromCtrf, out, historyDir);
         console.log(`Report generated from ${tool} CTRF: ${path.resolve(out)} (${tests} tests)`);
       } else if (from) {
         const { generateFromEvents } = await import('./generate');
-        const { tests } = await generateFromEvents(from, out);
+        const { tests } = await generateFromEvents(from, out, { historyDir });
         console.log(`Report generated: ${path.resolve(out)} (${tests} tests)`);
       }
       console.log(`Open it with: beacon open ${out}`);
@@ -92,25 +97,45 @@ switch (command) {
       out = args[outFlag + 1] ?? out;
       args.splice(outFlag, 2);
     }
+    let configFile: string | undefined;
+    const configFlag = args.indexOf('--config');
+    if (configFlag >= 0) {
+      configFile = args[configFlag + 1];
+      args.splice(configFlag, 2);
+    }
+    let historyDir: string | undefined;
+    const historyFlag = args.indexOf('--history');
+    if (historyFlag >= 0) {
+      historyDir = args[historyFlag + 1];
+      args.splice(historyFlag, 2);
+    }
     const blobDir = args[0] ?? 'blob-report';
     if (!existsSync(blobDir)) {
       fail(`Blob report directory not found: ${path.resolve(blobDir)}`);
     }
-    // Playwright parses its own blob format — we only provide the reporter.
-    // BEACON_OUTPUT_FOLDER stands in for reporter options, which the
-    // --reporter flag cannot pass.
+    // Playwright parses its own blob format. --reporter drops the options in
+    // a Playwright config, so --config is passed through on its own and the
+    // config's beacon-reporter entry supplies title, branding, and links.
     const { spawnSync } = await import('node:child_process');
-    // Windows resolves npx via npx.cmd, which needs a shell to execute.
     const windows = process.platform === 'win32';
-    const proc = spawnSync(
-      windows ? 'npx.cmd' : 'npx',
-      ['playwright', 'merge-reports', blobDir, '--reporter', 'beacon-reporter'],
-      {
-        stdio: 'inherit',
-        shell: windows,
-        env: { ...process.env, BEACON_OUTPUT_FOLDER: path.resolve(out) },
-      },
-    );
+    const mergeArgs = ['playwright', 'merge-reports'];
+    if (configFile) mergeArgs.push('--config', configFile);
+    else mergeArgs.push('--reporter', 'beacon-reporter');
+    mergeArgs.push(blobDir);
+    const env: NodeJS.ProcessEnv = { BEACON_OUTPUT_FOLDER: path.resolve(out) };
+    for (const [key, value] of Object.entries(process.env)) {
+      if (typeof value !== 'string') continue;
+      if (historyDir && key === 'BEACON_HISTORY') continue;
+      if (!historyDir && key === 'BEACON_HISTORY_DIR') continue;
+      env[key] = value;
+    }
+    if (historyDir) env.BEACON_HISTORY_DIR = path.resolve(historyDir);
+    else env.BEACON_HISTORY = '0';
+    const proc = spawnSync(windows ? 'npx.cmd' : 'npx', mergeArgs, {
+      stdio: 'inherit',
+      shell: windows,
+      env,
+    });
     if (proc.status !== 0) {
       fail('playwright merge-reports failed — is @playwright/test installed in this project?');
     }
@@ -252,16 +277,13 @@ switch (command) {
       args.splice(at, 2);
       return value;
     };
-    const historyDir = strFlag('--history') ?? '.beacon-history';
-    const minRate = Number(strFlag('--min-rate') ?? 0.5);
+    strFlag('--history');
+    strFlag('--min-rate');
     const minRuns = Number(strFlag('--min-runs') ?? 3);
     const reportDir = path.resolve(args[0] ?? 'beacon-report');
     try {
       const { quarantineCandidates, toGrepInvert } = await import('./quarantine');
-      const candidates = await quarantineCandidates(path.resolve(historyDir), reportDir, {
-        minRate,
-        minRuns,
-      });
+      const candidates = await quarantineCandidates(reportDir, { minRuns });
       if (grepInvert) {
         console.log(toGrepInvert(candidates));
       } else if (fixme) {
@@ -311,13 +333,16 @@ switch (command) {
     const formatFlag = args.indexOf('--format');
     const format = formatFlag >= 0 ? args[formatFlag + 1] : 'plain';
     if (formatFlag >= 0) args.splice(formatFlag, 2);
+    const urlFlag = args.indexOf('--url');
+    const reportUrl = urlFlag >= 0 ? args[urlFlag + 1] : process.env.BEACON_REPORT_URL;
+    if (urlFlag >= 0) args.splice(urlFlag, 2);
     if (format !== 'plain' && format !== 'slack' && format !== 'teams') {
       fail('beacon notify --format must be plain, slack or teams');
     }
     const reportDir = path.resolve(args[0] ?? 'beacon-report');
     try {
       const { notify } = await import('./notify');
-      await notify(reportDir, webhook, format);
+      await notify(reportDir, webhook, format, reportUrl);
       console.log(`Summary posted to webhook (${format}).`);
     } catch (error) {
       fail(error instanceof Error ? error.message : String(error));

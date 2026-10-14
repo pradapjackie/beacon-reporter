@@ -140,7 +140,11 @@ export function TestDetailPage() {
             {formatDuration(totalDuration)} total
           </span>
           <span>timeout {formatDuration(detail.timeout)}</span>
-          {result && <span>worker {result.workerIndex}</span>}
+          {result && (
+            <span>
+              worker {result.parallelIndex >= 0 ? result.parallelIndex : result.workerIndex}
+            </span>
+          )}
           {detail.shard !== undefined && <span>shard {detail.shard}</span>}
           <CopyChip
             label="Copy rerun command"
@@ -209,7 +213,11 @@ function SourceCard({ source }: { source: NonNullable<TestDetail['source']> }) {
           </span>
         )}
       </div>
-      <div className="overflow-x-auto px-3 py-3">
+      <div
+        // biome-ignore lint/a11y/noNoninteractiveTabindex: axe requires scrollable regions be keyboard-reachable
+        tabIndex={0}
+        className="overflow-x-auto px-3 py-3"
+      >
         <pre className="text-[12.5px] leading-[1.65]">
           {source.lines.map((line, i) => {
             const lineNo = source.startLine + i;

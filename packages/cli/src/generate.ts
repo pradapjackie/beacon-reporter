@@ -6,6 +6,8 @@ import { type RecordedFixture, replayFixture } from 'beacon-reporter/replay';
 export interface GenerateOptions {
   /** Copy the prebuilt UI next to the data (default true). */
   copyUi?: boolean;
+  /** When set, history is written here. Otherwise generate does not touch history. */
+  historyDir?: string;
 }
 
 /**
@@ -30,6 +32,7 @@ export async function generateFromEvents(
   const reporter = new BeaconReporter({
     outputFolder: path.resolve(outDir),
     copyUi: options.copyUi ?? true,
+    history: options.historyDir ? { dir: path.resolve(options.historyDir) } : false,
   });
   await replayFixture(reporter, fixture, process.cwd());
 

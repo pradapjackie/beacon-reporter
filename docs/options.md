@@ -18,7 +18,7 @@ reporter: [['beacon-reporter', { /* options */ }]]
 | `categories` | `Array<{ name, messageRegex?, stackRegex? }>` | — | Failure classification rules, checked before the built-ins (Timeout / Selector not found / Visual diff / Assertion). First match wins. |
 | `history` | `false \| { dir?, retain? }` | `{ dir: '.beacon-history', retain: 30 }` | Run history powering trends, compare, flakiness, and per-test strips. `false` disables. Keep the directory between runs (see [CI recipes](ci.md)). |
 | `editorLinks` | `boolean` | `false` | Render `vscode://` open-in-editor links. Records the absolute project root into the report — enable for local reports only. |
-| `scrub` | `Array<{ pattern, flags?, replacement? }>` | — | Regexes applied to error text, stdio, and embedded source before anything is written. Default replacement: `[redacted]`. |
+| `scrub` | `Array<{ pattern, flags?, replacement? }>` | — | Regexes applied to error text, step errors, stdio, embedded source, and text-like attachments (including Playwright's `error-context`) before anything is written. Category rules still match the original text. Binary attachments from other tools are not rewritten. Default replacement: `[redacted]`. |
 | `embedSource` | `boolean` | `true` | Embed a source snippet per test (failures always; every test when the run has ≤ 2000 tests). BDD tests embed the original `.feature` scenario. |
 | `watch` | `boolean` | `false` | **Live mode**: write throttled interim reports while tests run; an open report shows a pulsing "Running" pill and refreshes itself every ~2.5s until the final write. Also enabled by `BEACON_WATCH=1`. History records only finished runs. |
 | `watchIntervalMs` | `number` | `1500` | Interim write throttle for watch mode. |

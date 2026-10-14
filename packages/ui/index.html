@@ -15,6 +15,22 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      // Chromium blocks type=module (and crossorigin stylesheets) on file://,
+      // which leaves a blank page. This classic script still runs and explains
+      // how to open the report. It stays hidden once the module app mounts.
+      if (location.protocol === 'file:') {
+        document.addEventListener('DOMContentLoaded', function () {
+          var root = document.getElementById('root');
+          if (!root || root.childElementCount) return;
+          root.innerHTML =
+            '<div style="font:16px/1.5 system-ui,sans-serif;max-width:36rem;margin:4rem auto;padding:0 1.5rem;color:#101828">' +
+            '<h1 style="font-size:1.25rem;margin:0 0 .75rem">This report needs a local server in Chromium</h1>' +
+            '<p style="margin:0 0 .75rem">Chromium blocks the report scripts when the folder is opened from disk. From this folder run <code>npx beacon open</code>, or share one file with <code>npx beacon export</code>.</p>' +
+            '</div>';
+        });
+      }
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

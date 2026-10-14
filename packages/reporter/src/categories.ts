@@ -48,15 +48,24 @@ function compile(rules: CategoryRule[]) {
   });
 }
 
-/** Mutates failing details with a `category`; returns nothing (rollups read details). */
-export function categorize(details: TestDetail[], rules: CategoryRule[] = []): void {
+/**
+ * Mutates failing details with a `category`. `rawByCase` is the unscrubbed
+ * error text: category rules run before redaction so a pattern like
+ * `secret-` still matches after the stored message reads `[SECRET]`.
+ */
+export function categorize(
+  details: TestDetail[],
+  rules: CategoryRule[] = [],
+  rawByCase?: Map<string, string>,
+): void {
   const compiled = compile(rules);
   for (const detail of details) {
     if (detail.outcome !== 'unexpected' && detail.outcome !== 'flaky') continue;
     const errors = detail.results.flatMap((r) => r.errors);
-    if (errors.length === 0) continue;
-    const message = errors.map((e) => e.message).join('\n');
-    const stack = errors.map((e) => e.stack ?? '').join('\n');
+    const raw = rawByCase?.get(detail.caseId);
+    if (errors.length === 0 && !raw) continue;
+    const message = raw ?? errors.map((e) => e.message).join('\n');
+    const stack = raw ?? errors.map((e) => e.stack ?? '').join('\n');
 
     const user = compiled.find(
       (rule) => (rule.message?.test(message) ?? false) || (rule.stack?.test(stack) ?? false),
